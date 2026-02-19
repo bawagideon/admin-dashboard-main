@@ -20,14 +20,31 @@ export default function Sidebar({ isOpen, onClose }) {
 
     const sidebarItems = [
         { icon: LayoutDashboard, label: 'Overview', path: '/' },
-        ...(activeRole === roles.ADMIN ? [{ icon: Inbox, label: 'Admin Inbox', path: '/inbox' }] : []),
-        ...(activeRole === roles.TEAM_MEMBER ? [{ icon: ClipboardList, label: 'Mission Control', path: '/mission-control' }] : []),
-        ...(activeRole === roles.MD ? [{ icon: ShieldCheck, label: 'Executive Governance', path: '/governance' }] : []),
-        { icon: ClipboardList, label: 'Service Catalog', path: '/products' },
-        { icon: ShoppingCart, label: 'Service Requests', path: '/orders' },
-        { icon: Users, label: 'Clients', path: '/customers' },
-        { icon: Users, label: 'Team Workload', path: '/users' },
+        // Role-Specific Items
+        ...(activeRole === roles.ADMIN ? [
+            { icon: Inbox, label: 'Admin Inbox', path: '/inbox' },
+            { icon: Package, label: 'Service Catalog', path: '/products' }
+        ] : []),
+        ...(activeRole === roles.OPS_MANAGER ? [
+            { icon: ShoppingCart, label: 'Service Requests', path: '/orders' },
+            { icon: Users, label: 'Team Workload', path: '/users' }
+        ] : []),
+        ...(activeRole === roles.TEAM_MEMBER ? [
+            { icon: ClipboardList, label: 'Mission Control', path: '/mission-control' }
+        ] : []),
+        ...(activeRole === roles.MD ? [
+            { icon: ShieldCheck, label: 'Executive Governance', path: '/governance' },
+            { icon: Users, label: 'Clients', path: '/customers' }
+        ] : []),
     ];
+
+    const restartTour = () => {
+        localStorage.removeItem('hasSeenWorkflowTour');
+        window.dispatchEvent(new Event('restart-tour'));
+        if (window.innerWidth < 1024) {
+            onClose();
+        }
+    };
 
     return (
         <>
@@ -86,16 +103,11 @@ export default function Sidebar({ isOpen, onClose }) {
                     {/* Footer / System Health */}
                     <div className="p-4 border-t border-slate-800 space-y-3">
                         <button
-                            onClick={() => {
-                                window.dispatchEvent(new CustomEvent('restart-workflow-tour'));
-                                if (window.innerWidth < 1024) {
-                                    onClose();
-                                }
-                            }}
+                            onClick={restartTour}
                             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group font-medium text-xs text-primary bg-primary/5 hover:bg-primary/10 border border-primary/20"
                         >
                             <Sparkles className="w-4 h-4" />
-                            Restart Presentation Tour
+                            Presentation Tour
                         </button>
 
                         <NavLink

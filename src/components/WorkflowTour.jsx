@@ -8,18 +8,19 @@ export default function WorkflowTour() {
 
     // Initial check to see if tour should run
     useEffect(() => {
-        const hasSeenTour = localStorage.getItem('hasSeenWorkflowTour');
-        if (!hasSeenTour) {
-            setRun(true);
-        }
-
         const handleRestart = () => {
             setRun(false);
             setTimeout(() => setRun(true), 100);
         };
 
-        window.addEventListener('restart-workflow-tour', handleRestart);
-        return () => window.removeEventListener('restart-workflow-tour', handleRestart);
+        window.addEventListener('restart-tour', handleRestart);
+
+        const hasSeenTour = localStorage.getItem('hasSeenWorkflowTour');
+        if (!hasSeenTour) {
+            setRun(true);
+        }
+
+        return () => window.removeEventListener('restart-tour', handleRestart);
     }, []);
 
     const steps = [
