@@ -1,3 +1,7 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, Bell, Settings, Menu, Package, X, Check, RefreshCw, Trash2, Eye, ChevronRight, UserCircle, Zap, Users, CheckCircle, ShieldCheck } from 'lucide-react';
+import { cn } from '../lib/utils';
+import { useRole } from '../lib/RoleContext';
 import { useWorkflow } from '../lib/WorkflowContext';
 import { SERVICE_STATUS } from '../lib/constants';
 
