@@ -59,17 +59,19 @@ export default function Overview() {
 
     return (
         <div className="space-y-6">
-            <h1 className="text-2xl font-bold text-slate-800">Dangote Service Management</h1>
+            <h1 id="overview-header" className="text-2xl font-bold text-slate-800">Dangote Service Management</h1>
 
             {/* Metrics Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                <StatCard
-                    title="Active Requests"
-                    value={activeRequests.toString()}
-                    subtext="Real-time pipeline volume"
-                    trend={activeRequests > 20 ? "up" : "down"}
-                    icon={ClipboardList}
-                />
+                <div id="active-requests-card">
+                    <StatCard
+                        title="Active Requests"
+                        value={activeRequests.toString()}
+                        subtext="Real-time pipeline volume"
+                        trend={activeRequests > 20 ? "up" : "down"}
+                        icon={ClipboardList}
+                    />
+                </div>
                 <StatCard
                     title="Pending Assignment"
                     value={pendingAssignment.toString()}
@@ -142,6 +144,7 @@ export default function Overview() {
                         <div className="space-y-3">
                             {(activeRole === roles.ADMIN || activeRole === roles.MD) && (
                                 <button
+                                    id="admin-verify-btn"
                                     onClick={() => navigate('/inbox')}
                                     className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-xl text-sm font-medium text-slate-700 transition group"
                                 >

@@ -3,6 +3,7 @@ import { Search, Filter, MoreHorizontal, Download, Printer, CreditCard, Zap, Che
 import BulkActionsBar from '../components/BulkActionsBar';
 import SmartAssignPopover from '../components/SmartAssignPopover';
 import RequestTimeline from '../components/RequestTimeline';
+import QAReviewModal from '../components/QAReviewModal';
 import { cn } from '../lib/utils';
 import { useRole } from '../lib/RoleContext';
 import { useWorkflow } from '../lib/WorkflowContext';
@@ -74,6 +75,7 @@ export default function Orders() {
     const [assigningId, setAssigningId] = useState(null);
     const [processingPaymentId, setProcessingPaymentId] = useState(null);
     const [viewingRequest, setViewingRequest] = useState(null);
+    const [reviewingOrder, setReviewingOrder] = useState(null);
 
     const filteredOrders = orders.filter(order =>
         order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -230,7 +232,7 @@ export default function Orders() {
                                                     ) : (
                                                         <CreditCard className="w-3 h-3" />
                                                     )}
-                                                    Pay (Sim)
+                                                    Stripe/PayPal Hook
                                                 </button>
                                             )}
 
@@ -255,22 +257,13 @@ export default function Orders() {
                                             )}
 
                                             {order.status === SERVICE_STATUS.OPS_REVIEW && (activeRole === roles.OPS_MANAGER || activeRole === roles.ADMIN) && (
-                                                <div className="flex items-center gap-1">
-                                                    <button
-                                                        onClick={() => handleRework(order.id)}
-                                                        className="px-3 py-1 bg-red-500 text-white text-[10px] font-bold rounded-md hover:bg-red-600 transition flex items-center gap-1"
-                                                    >
-                                                        <AlertCircle className="w-3 h-3" />
-                                                        Rework
-                                                    </button>
-                                                    <button
-                                                        onClick={() => transitionOrder(order.id, SERVICE_STATUS.MD_APPROVAL)}
-                                                        className="px-3 py-1 bg-purple-600 text-white text-[10px] font-bold rounded-md hover:bg-purple-700 transition flex items-center gap-1"
-                                                    >
-                                                        <CheckCircle2 className="w-3 h-3" />
-                                                        Approve
-                                                    </button>
-                                                </div>
+                                                <button
+                                                    onClick={() => setReviewingOrder(order)}
+                                                    className="px-3 py-1 bg-purple-600 text-white text-[10px] font-bold rounded-md hover:bg-purple-700 transition flex items-center gap-1 shadow-sm"
+                                                >
+                                                    <ClipboardCheck className="w-3 h-3" />
+                                                    Perform QA Review
+                                                </button>
                                             )}
 
                                             <button className="text-slate-400 hover:text-primary transition">
@@ -331,6 +324,22 @@ export default function Orders() {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* QA Review Modal */}
+            {reviewingOrder && (
+                <QAReviewModal
+                    order={reviewingOrder}
+                    onApprove={() => {
+                        transitionOrder(reviewingOrder.id, SERVICE_STATUS.MD_APPROVAL);
+                        setReviewingOrder(null);
+                    }}
+                    onReject={() => {
+                        handleRework(reviewingOrder.id);
+                        setReviewingOrder(null);
+                    }}
+                    onClose={() => setReviewingOrder(null)}
+                />
             )}
         </div>
     );

@@ -16,20 +16,59 @@ export default function WorkflowTour() {
 
     const steps = [
         {
-            target: '#admin-inbox-header',
+            target: '#overview-header',
             content: (
                 <div className="text-left">
-                    <p className="font-bold text-primary mb-2">Phase 1: Intelligent Intake</p>
+                    <p className="font-bold text-primary mb-2">Welcome to your Dashboard</p>
                     <p className="text-sm text-slate-600 leading-relaxed">
-                        "The request should normally drop first with the admin in charge..."
-                    </p>
-                    <p className="text-xs text-slate-400 mt-2">
-                        Step 1: Admin reviews AI-parsed documents and generates Payment Advice.
+                        This is your central hub for managing the Dangote Service Fulfillment lifecycle.
                     </p>
                 </div>
             ),
             placement: 'bottom',
             disableBeacon: true,
+            role: [roles.ADMIN, roles.MD, roles.OPS_MANAGER, roles.TEAM_MEMBER]
+        },
+        {
+            target: '#active-requests-card',
+            content: (
+                <div className="text-left">
+                    <p className="font-bold text-primary mb-2">Real-time Pipeline</p>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                        Monitor the total volume of active service requests across all stages.
+                    </p>
+                </div>
+            ),
+            placement: 'right',
+            role: [roles.ADMIN, roles.MD, roles.OPS_MANAGER]
+        },
+        {
+            target: '#admin-verify-btn',
+            content: (
+                <div className="text-left">
+                    <p className="font-bold text-primary mb-2">Start Phase 1: Intake</p>
+                    <p className="text-sm text-slate-600">
+                        "The request should normally drop first with the admin in charge..."
+                    </p>
+                    <p className="text-xs text-slate-400 mt-2">
+                        Clicking this takes you to the <b>Admin Inbox</b> to verify details and send payment advice.
+                    </p>
+                </div>
+            ),
+            placement: 'top',
+            role: [roles.ADMIN]
+        },
+        {
+            target: '#admin-inbox-header',
+            content: (
+                <div className="text-left">
+                    <p className="font-bold text-primary mb-2">Phase 1: Intelligent Intake</p>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                        Admin reviews AI-parsed documents and generates Payment Advice.
+                    </p>
+                </div>
+            ),
+            placement: 'bottom',
             role: [roles.ADMIN]
         },
         {

@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Search, Bell, Settings, Menu, Package, X, Check, RefreshCw, Trash2, Eye, ChevronRight, UserCircle } from 'lucide-react';
-import { cn } from '../lib/utils';
-import { useRole } from '../lib/RoleContext';
+import { useWorkflow } from '../lib/WorkflowContext';
+import { SERVICE_STATUS } from '../lib/constants';
 
 export default function Header({ onMenuClick }) {
     const { activeRole, setActiveRole, roles } = useRole();
+    const { orders } = useWorkflow();
     const [showNotifications, setShowNotifications] = useState(false);
     const [showRoleSelector, setShowRoleSelector] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -12,10 +11,14 @@ export default function Header({ onMenuClick }) {
     const searchRef = useRef(null);
     const roleSelectorRef = useRef(null);
 
-    const notifications = [
-        { id: 179, time: '4h ago', text: 'New Service Request #179', subtext: 'Client requested Pipeline Audit | Priority: High' },
-        { id: 175, time: '3d ago', text: 'Task Re-assigned', subtext: 'Operations Manager assigned Task #175 to Team B' },
-    ];
+    // Dynamic Blueprint-Aligned Notifications
+    const notifications = orders.map(o => {
+        if (o.status === SERVICE_STATUS.UNASSIGNED) return { id: o.id, text: 'Payment Confirmed', subtext: `Order ${o.orderId}: Stripe/PayPal hook received. Forwarding to Ops Manager.`, time: 'Just now', icon: 'zap' };
+        if (o.status === SERVICE_STATUS.IN_PROGRESS) return { id: o.id, text: 'Task Assigned', subtext: `Ops Manager routed ${o.orderId} to ${o.assigned}.`, time: '10m ago', icon: 'user' };
+        if (o.status === SERVICE_STATUS.OPS_REVIEW) return { id: o.id, text: 'Evidence Submitted', subtext: `${o.assigned} submitted profiling & documents for ${o.orderId}.`, time: '2h ago', icon: 'check' };
+        if (o.status === SERVICE_STATUS.MD_APPROVAL) return { id: o.id, text: 'QA Approved', subtext: `Ops Manager vetted ${o.orderId} for final MD closure.`, time: '4h ago', icon: 'shield' };
+        return null;
+    }).filter(n => n !== null).slice(0, 5);
 
     // Mock Search Results
     const searchResults = [
@@ -153,7 +156,7 @@ export default function Header({ onMenuClick }) {
                                 <div className="absolute right-0 top-full mt-2 w-[90vw] md:w-96 bg-white rounded-xl shadow-2xl border border-gray-100 z-20 animate-in fade-in slide-in-from-top-2 duration-200 right-[-60px] md:right-0">
                                     <div className="p-4 border-b border-gray-100 flex justify-between items-center">
                                         <div className="flex items-center gap-2">
-                                            <span className="font-bold text-lg text-slate-800">Notifications (150)</span>
+                                            <span className="font-bold text-lg text-slate-800">Operational Alerts ({notifications.length})</span>
                                         </div>
                                         <button className="text-xs text-primary/70 hover:text-primary font-medium hover:underline">Mark All Read</button>
                                     </div>
@@ -162,7 +165,11 @@ export default function Header({ onMenuClick }) {
                                             <div key={notif.id} className="p-4 border-b border-gray-50 hover:bg-gray-50 transition cursor-pointer group">
                                                 <div className="flex items-start gap-4">
                                                     <div className="p-2 bg-gray-100 rounded-lg text-slate-400 group-hover:bg-white group-hover:shadow-sm transition">
-                                                        <Package className="w-5 h-5" />
+                                                        {notif.icon === 'zap' && <Zap className="w-5 h-5 text-yellow-500" />}
+                                                        {notif.icon === 'user' && <Users className="w-5 h-5 text-blue-500" />}
+                                                        {notif.icon === 'check' && <CheckCircle className="w-5 h-5 text-green-500" />}
+                                                        {notif.icon === 'shield' && <ShieldCheck className="w-5 h-5 text-primary" />}
+                                                        {!['zap', 'user', 'check', 'shield'].includes(notif.icon) && <Package className="w-5 h-5" />}
                                                     </div>
                                                     <div className="flex-1">
                                                         <div className="flex justify-between items-start mb-1">

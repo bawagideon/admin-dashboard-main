@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     ArrowLeft,
     CheckCircle,
@@ -11,7 +11,10 @@ import {
     Phone,
     MapPin,
     Calendar,
-    Download
+    Download,
+    Cpu,
+    Zap,
+    RefreshCw
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
@@ -20,6 +23,15 @@ import { useWorkflow } from '../lib/WorkflowContext';
 export default function AdminInbox() {
     const { addOrder } = useWorkflow();
     const [isApproved, setIsApproved] = useState(false);
+    const [isParsing, setIsParsing] = useState(true);
+
+    // AI Document Parsing Simulation (Box 1 in Blueprint)
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsParsing(false);
+        }, 2200);
+        return () => clearTimeout(timer);
+    }, []);
 
     // Mock Incoming Request Data
     const requestData = {
@@ -55,7 +67,39 @@ export default function AdminInbox() {
     };
 
     return (
-        <div className="space-y-6 max-w-7xl mx-auto">
+        <div className="space-y-6 max-w-7xl mx-auto relative">
+            {/* AI Parsing Overlay (Gap Closure) */}
+            {isParsing && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center animate-in fade-in duration-300">
+                    <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-md" />
+                    <div className="relative text-center space-y-6 max-w-md p-8 bg-white/5 rounded-3xl border border-white/10 shadow-2xl">
+                        <div className="relative w-24 h-24 mx-auto">
+                            <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping" />
+                            <div className="relative w-24 h-24 bg-primary/20 rounded-full border border-primary/30 flex items-center justify-center">
+                                <Cpu className="w-10 h-10 text-primary animate-pulse" />
+                            </div>
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-black text-white uppercase tracking-tighter">AI Document Parsing</h2>
+                            <p className="text-slate-400 text-sm mt-2 italic">"Analyzing CVs, ORCID profiles, and citations..."</p>
+                        </div>
+                        <div className="space-y-3 pt-4">
+                            <div className="flex items-center justify-between text-[10px] font-black text-primary uppercase tracking-widest text-left">
+                                <span>Parse & Extract</span>
+                                <span className="animate-pulse">Active</span>
+                            </div>
+                            <div className="w-full bg-white/10 rounded-full h-1.5 overflow-hidden">
+                                <div className="bg-primary h-full rounded-full animate-shimmer bg-gradient-to-r from-primary via-primary-hover to-primary shadow-[0_0_15px_rgba(124,58,237,0.5)]" style={{ width: '65%' }}></div>
+                            </div>
+                            <div className="flex flex-col gap-1.5">
+                                <span className="text-[10px] text-slate-500 flex items-center gap-2"><div className="w-1 h-1 bg-green-500 rounded-full" /> Identity Verification: SUCCESS</span>
+                                <span className="text-[10px] text-slate-500 flex items-center gap-2"><div className="w-1 h-1 bg-green-500 rounded-full" /> citation count: 154 EXTRACTED</span>
+                                <span className="text-[10px] text-slate-500 flex items-center gap-2 animate-pulse"><div className="w-1 h-1 bg-primary rounded-full" /> Calculating Eligibility Scores...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             {/* Header */}
             <div id="admin-inbox-header" className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
