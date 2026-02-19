@@ -15,8 +15,10 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
+import { useWorkflow } from '../lib/WorkflowContext';
 
 export default function AdminInbox() {
+    const { addOrder } = useWorkflow();
     const [isApproved, setIsApproved] = useState(false);
 
     // Mock Incoming Request Data
@@ -42,7 +44,14 @@ export default function AdminInbox() {
 
     const handleApprove = () => {
         setIsApproved(true);
-        // In a real app, this would trigger the actual email/notification
+        addOrder({
+            customer: requestData.client,
+            email: requestData.email,
+            service: requestData.serviceRequested,
+            orderId: `#${Math.floor(200 + Math.random() * 800)}`, // Simulate a new ID
+            assigned: 'Unassigned',
+            priority: aiAnalysis.complexity === 'High' ? 'High' : 'Medium'
+        });
     };
 
     return (

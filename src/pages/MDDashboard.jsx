@@ -13,15 +13,12 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import RequestTimeline from '../components/RequestTimeline';
-
-const initialVettingTasks = [
-    { id: 5, orderId: '#175', customer: 'Biliki Muhammed', service: 'Resource Allocation', assigned: 'Robert Fox', status: 'MD Approval', date: '2025-11-14 16:16:34 UTC' },
-    { id: 7, orderId: '#173', customer: 'Lagos Energy', service: 'Grid Optimization', assigned: 'Team Alpha', status: 'MD Approval', date: '2025-11-15 08:30:12 UTC' },
-    { id: 8, orderId: '#172', customer: 'Shell Nigeria', service: 'Compliance Audit', assigned: 'Team Gamma', status: 'MD Approval', date: '2025-11-15 11:45:55 UTC' },
-];
+import { useWorkflow } from '../lib/WorkflowContext';
+import { SERVICE_STATUS } from '../lib/constants';
 
 export default function MDDashboard() {
-    const [tasks, setTasks] = useState(initialVettingTasks);
+    const { orders, bulkClose, closeOrder } = useWorkflow();
+    const tasks = orders.filter(o => o.status === SERVICE_STATUS.MD_APPROVAL);
     const [selectedTasks, setSelectedTasks] = useState([]);
     const [viewingTask, setViewingTask] = useState(null);
     const [isArchiving, setIsArchiving] = useState(false);
@@ -35,7 +32,7 @@ export default function MDDashboard() {
     const handleBulkApprove = () => {
         if (selectedTasks.length === 0) return;
         const count = selectedTasks.length;
-        setTasks(prev => prev.filter(t => !selectedTasks.includes(t.id)));
+        bulkClose(selectedTasks);
         setSelectedTasks([]);
         alert(`Governance complete: ${count} cases approved and moved to final closing simulation.`);
     };
@@ -43,7 +40,7 @@ export default function MDDashboard() {
     const handleCloseCase = (task) => {
         setIsArchiving(true);
         setTimeout(() => {
-            setTasks(prev => prev.filter(t => t.id !== task.id));
+            closeOrder(task.id);
             setViewingTask(null);
             setIsArchiving(false);
             alert(`Case ${task.orderId} Closed. Completion email auto-generated for ${task.customer}. Record archived.`);

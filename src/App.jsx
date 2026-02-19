@@ -22,28 +22,31 @@ const Placeholder = ({ title }) => (
 );
 
 import { RoleProvider } from './lib/RoleContext';
+import { WorkflowProvider } from './lib/WorkflowContext';
 
 function App() {
   return (
-    <RoleProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<Overview />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/orders" element={<Orders />} />
-            <Route path="/customers" element={<Customers />} />
-            <Route path="/coupons" element={<Coupons />} />
-            <Route path="/audit-logs" element={<AuditLogs />} />
-            <Route path="/users" element={<RegisteredUsers />} />
-            <Route path="/messages" element={<ContactMessages />} />
-            <Route path="/inbox" element={<AdminInbox />} />
-            <Route path="/mission-control" element={<SpecialistWorkspace />} />
-            <Route path="/governance" element={<MDDashboard />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </RoleProvider>
+    <WorkflowProvider>
+      <RoleProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path="/" element={<Overview />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/orders" element={<Orders />} />
+              <Route path="/customers" element={<Customers />} />
+              <Route path="/coupons" element={<Coupons />} />
+              <Route path="/audit-logs" element={<AuditLogs />} />
+              <Route path="/users" element={<RegisteredUsers />} />
+              <Route path="/messages" element={<ContactMessages />} />
+              <Route path="/inbox" element={<AdminInbox />} />
+              <Route path="/mission-control" element={<SpecialistWorkspace />} />
+              <Route path="/governance" element={<MDDashboard />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </RoleProvider>
+    </WorkflowProvider>
   );
 }
 

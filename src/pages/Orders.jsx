@@ -17,7 +17,7 @@ const initialOrders = [
 
 export default function Orders() {
     const { activeRole, roles } = useRole();
-    const [orders, setOrders] = useState(initialOrders);
+    const { orders, updateOrder, transitionOrder, setRework } = useWorkflow();
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedOrders, setSelectedOrders] = useState([]);
     const [assigningId, setAssigningId] = useState(null);
@@ -48,25 +48,21 @@ export default function Orders() {
     const simulatePayment = (id) => {
         setProcessingPaymentId(id);
         setTimeout(() => {
-            setOrders(prev => prev.map(o =>
-                o.id === id ? { ...o, status: 'Unassigned' } : o
-            ));
+            transitionOrder(id, SERVICE_STATUS.UNASSIGNED);
             setProcessingPaymentId(null);
         }, 1500);
     };
 
     const handleAssign = (id, teamName) => {
-        setOrders(prev => prev.map(o =>
-            o.id === id ? { ...o, assigned: teamName, status: 'In Progress' } : o
-        ));
+        updateOrder(id, {
+            assigned: teamName,
+            status: SERVICE_STATUS.IN_PROGRESS
+        });
         setAssigningId(null);
     };
 
     const handleRework = (id) => {
-        setOrders(prev => prev.map(o =>
-            o.id === id ? { ...o, status: 'In Progress', rework: true } : o
-        ));
-        alert('Task sent back to Specialist with "Rework Needed" alert.');
+        setRework(id, 'Manager requested rework after quality check.');
     };
 
     return (
@@ -156,11 +152,11 @@ export default function Orders() {
                                     <td className="px-6 py-4">
                                         <span className={cn(
                                             "inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-[10px] font-bold border uppercase tracking-wider",
-                                            order.status === 'Awaiting Payment' ? 'bg-yellow-50 border-yellow-200 text-yellow-700' :
-                                                order.status === 'Unassigned' ? 'bg-red-50 border-red-200 text-red-700' :
-                                                    order.status === 'In Progress' ? 'bg-blue-50 border-blue-200 text-blue-700' :
-                                                        order.status === 'Ops Review' ? 'bg-purple-50 border-purple-200 text-purple-700' :
-                                                            order.status === 'MD Approval' ? 'bg-orange-50 border-orange-200 text-orange-700' :
+                                            order.status === SERVICE_STATUS.AWAITING_PAYMENT ? 'bg-yellow-50 border-yellow-200 text-yellow-700' :
+                                                order.status === SERVICE_STATUS.UNASSIGNED ? 'bg-red-50 border-red-200 text-red-700' :
+                                                    order.status === SERVICE_STATUS.IN_PROGRESS ? 'bg-blue-50 border-blue-200 text-blue-700' :
+                                                        order.status === SERVICE_STATUS.OPS_REVIEW ? 'bg-purple-50 border-purple-200 text-purple-700' :
+                                                            order.status === SERVICE_STATUS.MD_APPROVAL ? 'bg-orange-50 border-orange-200 text-orange-700' :
                                                                 'bg-green-50 border-green-200 text-green-700'
                                         )}>
                                             {order.status}
@@ -169,7 +165,7 @@ export default function Orders() {
                                     <td className="px-6 py-4 text-xs text-slate-500 font-mono">{order.date}</td>
                                     <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                                         <div className="flex items-center gap-2 relative">
-                                            {order.status === 'Awaiting Payment' && (activeRole === roles.ADMIN || activeRole === roles.MD) && (
+                                            {order.status === SERVICE_STATUS.AWAITING_PAYMENT && (activeRole === roles.ADMIN || activeRole === roles.MD) && (
                                                 <button
                                                     onClick={() => simulatePayment(order.id)}
                                                     disabled={processingPaymentId === order.id}
@@ -184,7 +180,7 @@ export default function Orders() {
                                                 </button>
                                             )}
 
-                                            {order.status === 'Unassigned' && (activeRole === roles.OPS_MANAGER || activeRole === roles.ADMIN) && (
+                                            {order.status === SERVICE_STATUS.UNASSIGNED && (activeRole === roles.OPS_MANAGER || activeRole === roles.ADMIN) && (
                                                 <div className="relative">
                                                     <button
                                                         onClick={() => setAssigningId(assigningId === order.id ? null : order.id)}
@@ -203,14 +199,23 @@ export default function Orders() {
                                                 </div>
                                             )}
 
-                                            {order.status === 'Ops Review' && (activeRole === roles.OPS_MANAGER || activeRole === roles.ADMIN) && (
-                                                <button
-                                                    onClick={() => handleRework(order.id)}
-                                                    className="px-3 py-1 bg-red-500 text-white text-[10px] font-bold rounded-md hover:bg-red-600 transition flex items-center gap-1"
-                                                >
-                                                    <AlertCircle className="w-3 h-3" />
-                                                    Rework
-                                                </button>
+                                            {order.status === SERVICE_STATUS.OPS_REVIEW && (activeRole === roles.OPS_MANAGER || activeRole === roles.ADMIN) && (
+                                                <div className="flex items-center gap-1">
+                                                    <button
+                                                        onClick={() => handleRework(order.id)}
+                                                        className="px-3 py-1 bg-red-500 text-white text-[10px] font-bold rounded-md hover:bg-red-600 transition flex items-center gap-1"
+                                                    >
+                                                        <AlertCircle className="w-3 h-3" />
+                                                        Rework
+                                                    </button>
+                                                    <button
+                                                        onClick={() => transitionOrder(order.id, SERVICE_STATUS.MD_APPROVAL)}
+                                                        className="px-3 py-1 bg-purple-600 text-white text-[10px] font-bold rounded-md hover:bg-purple-700 transition flex items-center gap-1"
+                                                    >
+                                                        <CheckCircle2 className="w-3 h-3" />
+                                                        Approve
+                                                    </button>
+                                                </div>
                                             )}
 
                                             <button className="text-slate-400 hover:text-primary transition">
