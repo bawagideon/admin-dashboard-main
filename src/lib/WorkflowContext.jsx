@@ -92,6 +92,12 @@ export function WorkflowProvider({ children }) {
         setOrders(prev => prev.map(o => {
             if (o.id === id) {
                 const updated = { ...o, status: nextStatus };
+
+                // [Notification Integration] Simulate Slack/Gmail API calls
+                console.log(`%c[NOTIFICATION ENGINE] Status Change for ${o.orderId}: ${o.status} -> ${nextStatus}`, 'color: #7c3aed; font-weight: bold;');
+                console.log(` > Mocking Slack API: "Attention @ops-team, Case ${o.orderId} moved to ${nextStatus}"`);
+                console.log(` > Mocking Gmail API: "To: ${o.email}, Subject: Your request is now ${nextStatus}"`);
+
                 // Initialize checklist if moving to In Progress and doesn't have one
                 if (nextStatus === SERVICE_STATUS.IN_PROGRESS && !updated.checklist) {
                     updated.checklist = SERVICE_CHECKLISTS[updated.service] || SERVICE_CHECKLISTS['default'];

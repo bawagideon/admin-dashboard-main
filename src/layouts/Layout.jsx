@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation, Navigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { cn } from '../lib/utils';
+import { useRole } from '../lib/RoleContext';
 
 export default function Layout() {
+    const { activeRole, roles } = useRole();
+    const location = useLocation();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    // [Role Security] Restrict /governance to MD role only
+    if (location.pathname === '/governance' && activeRole !== roles.MD) {
+        return <Navigate to="/" replace />;
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 flex font-sans">

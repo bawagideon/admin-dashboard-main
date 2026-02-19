@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, MoreHorizontal, Download, Printer, CreditCard, Zap, CheckCircle2, X, AlertCircle, Clock } from 'lucide-react';
 import BulkActionsBar from '../components/BulkActionsBar';
 import SmartAssignPopover from '../components/SmartAssignPopover';
@@ -14,6 +14,55 @@ const initialOrders = [
     { id: 5, orderId: '#175', customer: 'Biliki Muhammed', email: 'gyjhdsjhd@gmail.com', service: 'Resource Allocation', assigned: 'Robert Fox', status: 'MD Approval', date: '2025-11-14 16:16:34 UTC', rework: false },
     { id: 6, orderId: '#174', customer: 'Dangote Corp', email: 'procurement@dangote.com', service: 'Energy Assessment', assigned: 'Sarah Jenkins', status: 'Closed', date: '2025-11-13 10:11:05 UTC', rework: false },
 ];
+
+const SLATimer = ({ date, status }) => {
+    const [timeLeft, setTimeLeft] = useState('');
+    const [isOverdue, setIsOverdue] = useState(false);
+
+    useEffect(() => {
+        const calculate = () => {
+            const now = new Date();
+            const createdDate = new Date(date);
+            const diffMs = now - createdDate;
+            const diffHours = diffMs / (1000 * 60 * 60);
+
+            // Check if in Awaiting Payment for > 24h
+            if (status === SERVICE_STATUS.AWAITING_PAYMENT && diffHours > 24) {
+                setIsOverdue(true);
+            } else {
+                setIsOverdue(false);
+            }
+
+            const totalSLA = 48 * 60 * 60 * 1000; // 48h Total SLA
+            const remaining = totalSLA - diffMs;
+
+            if (remaining <= 0) {
+                setTimeLeft('EXPIRED');
+            } else {
+                const h = Math.floor(remaining / (1000 * 60 * 60));
+                const m = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+                setTimeLeft(`${h}h ${m}m`);
+            }
+        };
+
+        calculate();
+        const timer = setInterval(calculate, 60000);
+        return () => clearInterval(timer);
+    }, [date, status]);
+
+    if (status === SERVICE_STATUS.CLOSED) return null;
+
+    return (
+        <div className="flex flex-col items-center gap-0.5 mt-1">
+            <span className={cn(
+                "text-[8px] font-black font-mono tracking-tighter uppercase",
+                isOverdue ? "text-red-500 animate-pulse" : "text-slate-400"
+            )}>
+                {isOverdue ? 'SLA BREACH' : `SLA: ${timeLeft}`}
+            </span>
+        </div>
+    );
+};
 
 export default function Orders() {
     const { activeRole, roles } = useRole();
@@ -150,17 +199,20 @@ export default function Orders() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className={cn(
-                                            "inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-[10px] font-bold border uppercase tracking-wider",
-                                            order.status === SERVICE_STATUS.AWAITING_PAYMENT ? 'bg-yellow-50 border-yellow-200 text-yellow-700' :
-                                                order.status === SERVICE_STATUS.UNASSIGNED ? 'bg-red-50 border-red-200 text-red-700' :
-                                                    order.status === SERVICE_STATUS.IN_PROGRESS ? 'bg-blue-50 border-blue-200 text-blue-700' :
-                                                        order.status === SERVICE_STATUS.OPS_REVIEW ? 'bg-purple-50 border-purple-200 text-purple-700' :
-                                                            order.status === SERVICE_STATUS.MD_APPROVAL ? 'bg-orange-50 border-orange-200 text-orange-700' :
-                                                                'bg-green-50 border-green-200 text-green-700'
-                                        )}>
-                                            {order.status}
-                                        </span>
+                                        <div className="flex flex-col items-center">
+                                            <span className={cn(
+                                                "inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-[10px] font-bold border uppercase tracking-wider",
+                                                order.status === SERVICE_STATUS.AWAITING_PAYMENT ? 'bg-yellow-50 border-yellow-200 text-yellow-700' :
+                                                    order.status === SERVICE_STATUS.UNASSIGNED ? 'bg-red-50 border-red-200 text-red-700' :
+                                                        order.status === SERVICE_STATUS.IN_PROGRESS ? 'bg-blue-50 border-blue-200 text-blue-700' :
+                                                            order.status === SERVICE_STATUS.OPS_REVIEW ? 'bg-purple-50 border-purple-200 text-purple-700' :
+                                                                order.status === SERVICE_STATUS.MD_APPROVAL ? 'bg-orange-50 border-orange-200 text-orange-700' :
+                                                                    'bg-green-50 border-green-200 text-green-700'
+                                            )}>
+                                                {order.status}
+                                            </span>
+                                            <SLATimer date={order.date} status={order.status} />
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4 text-xs text-slate-500 font-mono">{order.date}</td>
                                     <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
