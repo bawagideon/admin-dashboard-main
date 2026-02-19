@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, MoreHorizontal, Download, Printer, CreditCard, Zap, CheckCircle2, X, AlertCircle, Clock } from 'lucide-react';
+import { Search, Filter, MoreHorizontal, Download, Printer, CreditCard, Zap, CheckCircle2, X, AlertCircle, Clock, ClipboardCheck } from 'lucide-react';
 import BulkActionsBar from '../components/BulkActionsBar';
 import SmartAssignPopover from '../components/SmartAssignPopover';
 import RequestTimeline from '../components/RequestTimeline';

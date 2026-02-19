@@ -67,7 +67,7 @@ export function WorkflowProvider({ children }) {
     const addOrder = useCallback((newOrder) => {
         setOrders(prev => [{
             ...newOrder,
-            id: prev.length + 1,
+            id: Date.now(),
             status: SERVICE_STATUS.AWAITING_PAYMENT,
             date: new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC',
             rework: false

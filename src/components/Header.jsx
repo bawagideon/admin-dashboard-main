@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, Bell, Settings, Menu, Package, X, Check, RefreshCw, Trash2, Eye, ChevronRight, UserCircle, Zap, Users, CheckCircle, ShieldCheck } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useRole } from '../lib/RoleContext';
@@ -15,14 +15,16 @@ export default function Header({ onMenuClick }) {
     const searchRef = useRef(null);
     const roleSelectorRef = useRef(null);
 
-    // Dynamic Blueprint-Aligned Notifications
-    const notifications = orders.map(o => {
-        if (o.status === SERVICE_STATUS.UNASSIGNED) return { id: o.id, text: 'Payment Confirmed', subtext: `Order ${o.orderId}: Stripe/PayPal hook received. Forwarding to Ops Manager.`, time: 'Just now', icon: 'zap' };
-        if (o.status === SERVICE_STATUS.IN_PROGRESS) return { id: o.id, text: 'Task Assigned', subtext: `Ops Manager routed ${o.orderId} to ${o.assigned}.`, time: '10m ago', icon: 'user' };
-        if (o.status === SERVICE_STATUS.OPS_REVIEW) return { id: o.id, text: 'Evidence Submitted', subtext: `${o.assigned} submitted profiling & documents for ${o.orderId}.`, time: '2h ago', icon: 'check' };
-        if (o.status === SERVICE_STATUS.MD_APPROVAL) return { id: o.id, text: 'QA Approved', subtext: `Ops Manager vetted ${o.orderId} for final MD closure.`, time: '4h ago', icon: 'shield' };
-        return null;
-    }).filter(n => n !== null).slice(0, 5);
+    // Dynamic Blueprint-Aligned Notifications (Optimized with useMemo)
+    const notifications = useMemo(() => {
+        return orders.map(o => {
+            if (o.status === SERVICE_STATUS.UNASSIGNED) return { id: o.id, text: 'Payment Confirmed', subtext: `Order ${o.orderId}: Stripe/PayPal hook received. Forwarding to Ops Manager.`, time: 'Just now', icon: 'zap' };
+            if (o.status === SERVICE_STATUS.IN_PROGRESS) return { id: o.id, text: 'Task Assigned', subtext: `Ops Manager routed ${o.orderId} to ${o.assigned}.`, time: '10m ago', icon: 'user' };
+            if (o.status === SERVICE_STATUS.OPS_REVIEW) return { id: o.id, text: 'Evidence Submitted', subtext: `${o.assigned} submitted profiling & documents for ${o.orderId}.`, time: '2h ago', icon: 'check' };
+            if (o.status === SERVICE_STATUS.MD_APPROVAL) return { id: o.id, text: 'QA Approved', subtext: `Ops Manager vetted ${o.orderId} for final MD closure.`, time: '4h ago', icon: 'shield' };
+            return null;
+        }).filter(n => n !== null).slice(0, 5);
+    }, [orders]);
 
     // Mock Search Results
     const searchResults = [
@@ -157,7 +159,7 @@ export default function Header({ onMenuClick }) {
                         {showNotifications && (
                             <>
                                 <div className="fixed inset-0 z-10" onClick={() => setShowNotifications(false)}></div>
-                                <div className="absolute right-0 top-full mt-2 w-[90vw] md:w-96 bg-white rounded-xl shadow-2xl border border-gray-100 z-20 animate-in fade-in slide-in-from-top-2 duration-200 right-[-60px] md:right-0">
+                                <div className="absolute top-full mt-2 w-[90vw] md:w-96 bg-white rounded-xl shadow-2xl border border-gray-100 z-20 animate-in fade-in slide-in-from-top-2 duration-200 right-[-60px] md:right-0">
                                     <div className="p-4 border-b border-gray-100 flex justify-between items-center">
                                         <div className="flex items-center gap-2">
                                             <span className="font-bold text-lg text-slate-800">Operational Alerts ({notifications.length})</span>
