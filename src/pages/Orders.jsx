@@ -5,6 +5,8 @@ import SmartAssignPopover from '../components/SmartAssignPopover';
 import RequestTimeline from '../components/RequestTimeline';
 import { cn } from '../lib/utils';
 import { useRole } from '../lib/RoleContext';
+import { useWorkflow } from '../lib/WorkflowContext';
+import { SERVICE_STATUS } from '../lib/constants';
 
 const initialOrders = [
     { id: 1, orderId: '#179', customer: 'Anne Guesser', email: 'anyiafavour@gmail.com', service: 'Pipeline Inspection', assigned: 'Unassigned', status: 'Unassigned', date: '2025-11-14 15:56:24 UTC', rework: false },

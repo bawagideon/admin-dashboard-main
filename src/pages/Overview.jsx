@@ -76,8 +76,8 @@ export default function Overview() {
                 {/* Service Pipeline Overview */}
                 <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
                     <h3 className="text-lg font-bold text-slate-800 mb-6">Fulfillment Throughput</h3>
-                    <div className="h-80 w-full min-h-[320px]">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <div className="h-80 w-full min-h-[320px] relative overflow-hidden">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0} debounce={100}>
                             <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
                                 <XAxis type="number" dataKey="x" name="stature" hide />

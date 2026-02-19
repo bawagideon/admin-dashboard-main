@@ -38,3 +38,9 @@ export const SERVICE_CHECKLISTS = {
         { id: 3, label: 'Quality Sign-off', completed: false },
     ]
 };
+
+export const SERVICE_CATALOG = [
+    { id: 1, name: 'Standard EB-1A Analysis', fee: '₦150,000', availability: '12 Specialists', leadTime: '3-5 Days', status: 'Active' },
+    { id: 2, name: 'Premium O-1A Filing', fee: '₦450,000', availability: '5 Specialists', leadTime: '14-21 Days', status: 'Active' },
+    { id: 3, name: 'Corporate Green Card Audit', fee: '₦850,000', availability: '2 Specialists', leadTime: '30 Days', status: 'In Demand' },
+];
