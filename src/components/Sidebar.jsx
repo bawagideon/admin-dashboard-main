@@ -9,7 +9,8 @@ import {
     Inbox,
     Activity,
     Package,
-    ShieldCheck
+    ShieldCheck,
+    Sparkles
 } from 'lucide-react';
 import { useRole } from '../lib/RoleContext';
 import { cn } from '../lib/utils';
@@ -84,6 +85,19 @@ export default function Sidebar({ isOpen, onClose }) {
 
                     {/* Footer / System Health */}
                     <div className="p-4 border-t border-slate-800 space-y-3">
+                        <button
+                            onClick={() => {
+                                window.dispatchEvent(new CustomEvent('restart-workflow-tour'));
+                                if (window.innerWidth < 1024) {
+                                    onClose();
+                                }
+                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group font-medium text-xs text-primary bg-primary/5 hover:bg-primary/10 border border-primary/20"
+                        >
+                            <Sparkles className="w-4 h-4" />
+                            Restart Presentation Tour
+                        </button>
+
                         <NavLink
                             to="/audit-logs"
                             onClick={() => {

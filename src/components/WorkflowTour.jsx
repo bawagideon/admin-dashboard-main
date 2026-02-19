@@ -12,6 +12,14 @@ export default function WorkflowTour() {
         if (!hasSeenTour) {
             setRun(true);
         }
+
+        const handleRestart = () => {
+            setRun(false);
+            setTimeout(() => setRun(true), 100);
+        };
+
+        window.addEventListener('restart-workflow-tour', handleRestart);
+        return () => window.removeEventListener('restart-workflow-tour', handleRestart);
     }, []);
 
     const steps = [

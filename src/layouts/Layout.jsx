@@ -24,8 +24,10 @@ export default function Layout() {
                 "ml-0 md:ml-64"
             )}>
                 <Header onMenuClick={() => setIsSidebarOpen(true)} />
-                <main className="flex-1 p-4 md:p-8 overflow-y-auto w-full max-w-[100vw]">
-                    <Outlet />
+                <main className="flex-1 p-4 md:p-10 overflow-y-auto w-full max-w-[100vw]">
+                    <div className="max-w-7xl mx-auto">
+                        <Outlet />
+                    </div>
                 </main>
             </div>
         </div>
