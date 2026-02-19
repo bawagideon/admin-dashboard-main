@@ -128,7 +128,7 @@ export default function SpecialistWorkspace() {
                                             <ClipboardCheck className="w-4 h-4 text-primary" />
                                             Evidence Checklist
                                         </h4>
-                                        <div className="space-y-3">
+                                        <div id="evidence-locker" className="space-y-3">
                                             {activeTask.checklist?.map((item) => (
                                                 <button
                                                     key={item.id}

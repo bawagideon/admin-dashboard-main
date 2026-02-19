@@ -57,7 +57,7 @@ export default function AdminInbox() {
     return (
         <div className="space-y-6 max-w-7xl mx-auto">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div id="admin-inbox-header" className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <Link to="/" className="p-2 hover:bg-gray-100 rounded-lg transition text-slate-500">
                         <ArrowLeft className="w-5 h-5" />
@@ -207,8 +207,9 @@ export default function AdminInbox() {
 
                             {/* Action Button */}
                             <button
+                                id="approve-quote-btn"
+                                className="w-full py-4 bg-primary text-white rounded-2xl font-black text-lg hover:bg-primary/90 transition-all hover:scale-[1.01] active:scale-[0.98] shadow-xl shadow-primary/20 flex items-center justify-center gap-2"
                                 onClick={handleApprove}
-                                className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95 group"
                             >
                                 <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                                 Approve & Send Payment Advice

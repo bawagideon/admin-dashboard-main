@@ -204,7 +204,7 @@ export default function Orders() {
                                         <div className="flex flex-col items-center">
                                             <span className={cn(
                                                 "inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-[10px] font-bold border uppercase tracking-wider",
-                                                order.status === SERVICE_STATUS.AWAITING_PAYMENT ? 'bg-yellow-50 border-yellow-200 text-yellow-700' :
+                                                order.status === SERVICE_STATUS.AWAITING_PAYMENT ? 'bg-yellow-50 border-yellow-200 text-yellow-700 pipeline-stage-awaiting' :
                                                     order.status === SERVICE_STATUS.UNASSIGNED ? 'bg-red-50 border-red-200 text-red-700' :
                                                         order.status === SERVICE_STATUS.IN_PROGRESS ? 'bg-blue-50 border-blue-200 text-blue-700' :
                                                             order.status === SERVICE_STATUS.OPS_REVIEW ? 'bg-purple-50 border-purple-200 text-purple-700' :
@@ -237,6 +237,7 @@ export default function Orders() {
                                             {order.status === SERVICE_STATUS.UNASSIGNED && (activeRole === roles.OPS_MANAGER || activeRole === roles.ADMIN) && (
                                                 <div className="relative">
                                                     <button
+                                                        id="smart-assign-btn"
                                                         onClick={() => setAssigningId(assigningId === order.id ? null : order.id)}
                                                         className="px-3 py-1 bg-primary text-white text-[10px] font-bold rounded-md hover:bg-primary/90 transition flex items-center gap-1"
                                                     >

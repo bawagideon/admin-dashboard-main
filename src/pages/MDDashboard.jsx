@@ -155,6 +155,7 @@ export default function MDDashboard() {
 
                             <div className="p-6 bg-white border-t border-slate-50 flex items-center gap-3">
                                 <button
+                                    id="md-approve-btn"
                                     onClick={() => handleCloseCase(viewingTask)}
                                     disabled={isArchiving}
                                     className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 disabled:opacity-50"

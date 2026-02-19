@@ -23,11 +23,13 @@ const Placeholder = ({ title }) => (
 
 import { RoleProvider } from './lib/RoleContext';
 import { WorkflowProvider } from './lib/WorkflowContext';
+import WorkflowTour from './components/WorkflowTour';
 
 function App() {
   return (
     <WorkflowProvider>
       <RoleProvider>
+        <WorkflowTour />
         <BrowserRouter>
           <Routes>
             <Route element={<Layout />}>
