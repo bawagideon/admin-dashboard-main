@@ -2,23 +2,52 @@ import React, { useState } from 'react';
 import { Users, DollarSign, Star, Zap, Search, Filter, Eye, Trash2, Download } from 'lucide-react';
 import StatCard from '../components/StatsCard';
 import CustomerModal from '../components/CustomerModal';
-
-const customers = [
-    { id: 1, name: 'Biliki Okocha', email: 'biliki@example.com', phone: '+234 801 234 5678', orders: 12, totalSpent: '₦345,000', status: 'VIP', joinDate: '12 Jan, 2024' },
-    { id: 2, name: 'Chioma Vanessa', email: 'chioma@example.com', phone: '+234 809 876 5432', orders: 5, totalSpent: '₦120,500', status: 'Active', joinDate: '24 Feb, 2024' },
-    { id: 3, name: 'Anyia Favour', email: 'anyia@example.com', phone: '+234 705 555 1212', orders: 1, totalSpent: '₦25,000', status: 'New', joinDate: '10 Mar, 2025' },
-    { id: 4, name: 'Femi Adebayo', email: 'femi@example.com', phone: '+234 812 333 4444', orders: 20, totalSpent: '₦890,000', status: 'VIP', joinDate: '01 Dec, 2023' },
-    { id: 5, name: 'Grace Okafor', email: 'grace@example.com', phone: '+234 909 000 1111', orders: 2, totalSpent: '₦40,000', status: 'Active', joinDate: '15 Mar, 2025' },
-];
+import { useWorkflow } from '../lib/WorkflowContext';
+import { SERVICE_CATALOG } from '../lib/constants';
 
 export default function Customers() {
+    const { orders } = useWorkflow();
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
 
-    const filteredCustomers = customers.filter(c =>
+    // Dynamic Customer Derivation from Service Orders
+    const derivedCustomers = Object.values(orders.reduce((acc, order) => {
+        const email = order.email || 'guest@example.com';
+        if (!acc[email]) {
+            acc[email] = {
+                id: order.id,
+                name: order.customer,
+                email: email,
+                phone: '+234 --- --- ----',
+                orders: 0,
+                totalSpentValue: 0,
+                joinDate: order.date
+            };
+        }
+        acc[email].orders += 1;
+
+        // Find fee in catalog or default to 0
+        const catalogItem = SERVICE_CATALOG.find(s => s.name === order.service);
+        const feeStr = catalogItem ? catalogItem.fee : '₦0';
+        const feeNum = parseInt(feeStr.replace(/[^\d]/g, '')) || 0;
+        acc[email].totalSpentValue += feeNum;
+
+        return acc;
+    }, {})).map(c => ({
+        ...c,
+        totalSpent: `₦${c.totalSpentValue.toLocaleString()}`,
+        status: c.orders >= 3 ? 'VIP' : c.orders === 1 ? 'New' : 'Active'
+    }));
+
+    const filteredCustomers = derivedCustomers.filter(c =>
         c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         c.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // Dynamic Summary Metrics
+    const totalSpentAll = derivedCustomers.reduce((sum, c) => sum + c.totalSpentValue, 0);
+    const vipCount = derivedCustomers.filter(c => c.status === 'VIP').length;
+    const newCount = derivedCustomers.filter(c => c.status === 'New').length;
 
     return (
         <div className="space-y-8">
@@ -29,10 +58,10 @@ export default function Customers() {
 
             {/* Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard title="Total Customers" value="21" subtext="The entire customer base" icon={Users} />
-                <StatCard title="Total Spent (NGN)" value="₦101.7M" subtext="Across 21 customers" icon={DollarSign} />
-                <StatCard title="VIP Customers" value="5" subtext="Customers with >10 orders" icon={Star} />
-                <StatCard title="New Customers" value="11" subtext="Customers with 0 orders" icon={Zap} />
+                <StatCard title="Total Customers" value={derivedCustomers.length.toString()} subtext="With active/past requests" icon={Users} />
+                <StatCard title="Total Spent (NGN)" value={`₦${(totalSpentAll / 1000000).toFixed(1)}M`} subtext="Aggregate revenue" icon={DollarSign} />
+                <StatCard title="VIP Customers" value={vipCount.toString()} subtext="Clients with >= 3 orders" icon={Star} />
+                <StatCard title="New Customers" value={newCount.toString()} subtext="Single-request clients" icon={Zap} />
             </div>
 
             {/* Directory Section */}
@@ -97,8 +126,8 @@ export default function Customers() {
                                     <td className="px-6 py-4 text-sm font-semibold text-slate-800">{customer.totalSpent}</td>
                                     <td className="px-6 py-4">
                                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${customer.status === 'VIP' ? 'bg-purple-100 text-purple-700' :
-                                                customer.status === 'New' ? 'bg-blue-100 text-blue-700' :
-                                                    'bg-green-100 text-green-700'
+                                            customer.status === 'New' ? 'bg-blue-100 text-blue-700' :
+                                                'bg-green-100 text-green-700'
                                             }`}>
                                             {customer.status}
                                         </span>

@@ -2,20 +2,41 @@ import React, { useState } from 'react';
 import { Search, User, Edit2, Ban, CheckCircle, Clock, Users, Zap, AlertTriangle } from 'lucide-react';
 import StatCard from '../components/StatsCard';
 import { cn } from '../lib/utils';
-
-const teams = [
-    { id: 1, name: 'Team Alpha (Special Ops)', lead: 'Tunde Bakare', members: 5, workload: 45, status: 'Optimal', activeTasks: 3, lastActive: '10 mins ago' },
-    { id: 2, name: 'Team Beta (Field Techs)', lead: 'Ngozi Obi', members: 8, workload: 85, status: 'Overloaded', activeTasks: 7, lastActive: '2 hours ago' },
-    { id: 3, name: 'Team Gamma (Strategy)', lead: 'Emeka Okafor', members: 3, workload: 15, status: 'Underutilized', activeTasks: 1, lastActive: '1 day ago' },
-];
+import { useWorkflow } from '../lib/WorkflowContext';
+import { SERVICE_STATUS, TEAM_SUGGESTIONS } from '../lib/constants';
 
 export default function RegisteredUsers() {
+    const { orders } = useWorkflow();
     const [searchTerm, setSearchTerm] = useState('');
 
-    const filteredTeams = teams.filter(t =>
+    // Dynamic Team Capacity & Workload Calculation
+    const dynamicTeams = TEAM_SUGGESTIONS.map(team => {
+        const teamOrders = orders.filter(o => o.assigned === team.name);
+        const activeTasks = teamOrders.filter(o =>
+            o.status === SERVICE_STATUS.IN_PROGRESS ||
+            o.status === SERVICE_STATUS.OPS_REVIEW
+        ).length;
+
+        // Baseline capacity of 5 tasks per team
+        const workload = Math.min(Math.round((activeTasks / 5) * 100), 100);
+
+        return {
+            ...team,
+            members: 5, // Simulated member count
+            activeTasks,
+            workload,
+            status: workload > 80 ? 'Overloaded' : workload > 40 ? 'Optimal' : 'Underutilized',
+            lastActive: teamOrders.length > 0 ? 'Active Today' : 'No recent tasks'
+        };
+    });
+
+    const filteredTeams = dynamicTeams.filter(t =>
         t.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         t.lead.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const avgWorkload = Math.round(dynamicTeams.reduce((acc, t) => acc + t.workload, 0) / dynamicTeams.length);
+    const capacityAlerts = dynamicTeams.filter(t => t.status === 'Overloaded').length;
 
     return (
         <div className="space-y-6">
@@ -38,9 +59,9 @@ export default function RegisteredUsers() {
 
             {/* Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <StatCard title="Total Teams" value="3" subtext="Active units" icon={Users} />
-                <StatCard title="Avg Workload" value="48%" subtext="Across all teams" trend="up" icon={Zap} />
-                <StatCard title="Capacity Alerts" value="1" subtext="Teams overloaded" icon={AlertTriangle} />
+                <StatCard title="Total Teams" value={dynamicTeams.length.toString()} subtext="Active units" icon={Users} />
+                <StatCard title="Avg Workload" value={`${avgWorkload}%`} subtext="Across all teams" trend={avgWorkload > 50 ? "up" : "down"} icon={Zap} />
+                <StatCard title="Capacity Alerts" value={capacityAlerts.toString()} subtext="Teams overloaded" icon={AlertTriangle} />
             </div>
 
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
@@ -88,8 +109,8 @@ export default function RegisteredUsers() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider ${team.status === 'Optimal' ? 'bg-green-50 text-green-700 border-green-200' :
-                                                team.status === 'Overloaded' ? 'bg-red-50 text-red-700 border-red-200' :
-                                                    'bg-blue-50 text-blue-700 border-blue-200'
+                                            team.status === 'Overloaded' ? 'bg-red-50 text-red-700 border-red-200' :
+                                                'bg-blue-50 text-blue-700 border-blue-200'
                                             }`}>
                                             {team.status}
                                         </span>

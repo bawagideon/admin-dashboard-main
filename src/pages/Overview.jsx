@@ -13,6 +13,8 @@ import {
     ScatterChart,
     Scatter
 } from 'recharts';
+import { useWorkflow } from '../lib/WorkflowContext';
+import { SERVICE_STATUS, SERVICE_CATALOG } from '../lib/constants';
 import StatCard from '../components/StatsCard';
 
 // Mock Data
@@ -37,6 +39,24 @@ const LoadingBar = ({ percentage }) => (
 export default function Overview() {
     const navigate = useNavigate();
     const { activeRole, roles } = useRole();
+    const { orders } = useWorkflow();
+
+    // Dynamic Metrics Calculations
+    const activeRequests = orders.filter(o => o.status !== SERVICE_STATUS.CLOSED).length;
+    const pendingAssignment = orders.filter(o => o.status === SERVICE_STATUS.UNASSIGNED).length;
+    const serviceTypesCount = SERVICE_CATALOG.length;
+    const teamsOnDuty = new Set(orders.map(o => o.assigned).filter(a => a !== 'Unassigned')).size;
+
+    // Service Distribution Logic
+    const distribution = orders.reduce((acc, o) => {
+        acc[o.service] = (acc[o.service] || 0) + 1;
+        return acc;
+    }, {});
+
+    const topServices = Object.entries(distribution)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 2);
+
     return (
         <div className="space-y-6">
             <h1 className="text-2xl font-bold text-slate-800">Dangote Service Management</h1>
@@ -45,28 +65,28 @@ export default function Overview() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 <StatCard
                     title="Active Requests"
-                    value="42"
-                    subtext="+12% from last week"
-                    trend="up"
+                    value={activeRequests.toString()}
+                    subtext="Real-time pipeline volume"
+                    trend={activeRequests > 20 ? "up" : "down"}
                     icon={ClipboardList}
                 />
                 <StatCard
                     title="Pending Assignment"
-                    value="8"
+                    value={pendingAssignment.toString()}
                     subtext="Requires Ops attention"
-                    trend="down"
+                    trend={pendingAssignment > 5 ? "up" : "down"}
                     icon={Zap}
                 />
                 <StatCard
                     title="Service Types"
-                    value="14"
+                    value={serviceTypesCount.toString()}
                     subtext="Available in catalog"
                     icon={Package}
                 />
                 <StatCard
                     title="Team on Duty"
-                    value="24"
-                    subtext="Available for tasks"
+                    value={teamsOnDuty.toString()}
+                    subtext="Teams currently assigned"
                     icon={Users}
                 />
             </div>
@@ -94,20 +114,22 @@ export default function Overview() {
                     <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col">
                         <h3 className="text-lg font-bold text-slate-800 mb-6">Service Distribution</h3>
                         <div className="space-y-6">
-                            <div>
-                                <div className="flex justify-between text-sm font-medium text-slate-600 mb-1">
-                                    <span>Industrial Logistics</span>
-                                    <span>65%</span>
+                            {topServices.length > 0 ? topServices.map(([name, count]) => {
+                                const percentage = Math.round((count / orders.length) * 100);
+                                return (
+                                    <div key={name}>
+                                        <div className="flex justify-between text-sm font-medium text-slate-600 mb-1">
+                                            <span>{name}</span>
+                                            <span>{percentage}%</span>
+                                        </div>
+                                        <LoadingBar percentage={percentage} />
+                                    </div>
+                                );
+                            }) : (
+                                <div className="text-center py-4 text-slate-400 text-sm italic">
+                                    No data available yet
                                 </div>
-                                <LoadingBar percentage={65} />
-                            </div>
-                            <div>
-                                <div className="flex justify-between text-sm font-medium text-slate-600 mb-1">
-                                    <span>Resource Planning</span>
-                                    <span>35%</span>
-                                </div>
-                                <LoadingBar percentage={35} />
-                            </div>
+                            )}
                         </div>
                     </div>
 
