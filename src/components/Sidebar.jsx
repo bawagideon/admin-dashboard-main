@@ -23,18 +23,21 @@ export default function Sidebar({ isOpen, onClose }) {
         // Role-Specific Items
         ...(activeRole === roles.ADMIN ? [
             { icon: Inbox, label: 'Admin Inbox', path: '/inbox' },
-            { icon: Package, label: 'Service Catalog', path: '/products' }
+            { icon: Package, label: 'Service Catalog', path: '/products' },
+            { icon: ShoppingCart, label: 'Service Requests', path: '/orders' }
         ] : []),
         ...(activeRole === roles.OPS_MANAGER ? [
             { icon: ShoppingCart, label: 'Service Requests', path: '/orders' },
-            { icon: Users, label: 'Team Workload', path: '/users' }
+            { icon: Users, label: 'Team Workload', path: '/users' },
+            { icon: Package, label: 'Service Catalog', path: '/products' }
         ] : []),
         ...(activeRole === roles.TEAM_MEMBER ? [
             { icon: ClipboardList, label: 'Mission Control', path: '/mission-control' }
         ] : []),
         ...(activeRole === roles.MD ? [
             { icon: ShieldCheck, label: 'Executive Governance', path: '/governance' },
-            { icon: Users, label: 'Clients', path: '/customers' }
+            { icon: Users, label: 'Clients', path: '/customers' },
+            { icon: ShoppingCart, label: 'Service Requests', path: '/orders' }
         ] : []),
     ];
 

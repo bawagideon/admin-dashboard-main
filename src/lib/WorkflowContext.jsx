@@ -15,49 +15,6 @@ const initialOrders = [
         date: '2025-11-14 15:56:24 UTC',
         rework: false,
         priority: 'Medium'
-    },
-    {
-        id: 2,
-        orderId: '#178',
-        customer: 'Anne Guesser',
-        email: 'anyiafavour@gmail.com',
-        service: 'Corporate Green Card Audit',
-        assigned: 'Team Alpha (Special Ops)',
-        status: SERVICE_STATUS.IN_PROGRESS,
-        date: '2025-11-14 15:59:07 UTC',
-        rework: true,
-        reworkComment: 'Evidence for Section 4.2 is blurry. Please re-upload.',
-        priority: 'High',
-        checklist: [
-            { id: 1, label: 'Standard Operating Procedures Review', completed: true },
-            { id: 2, label: 'Safety Compliance Evidence', completed: false },
-            { id: 3, label: 'Financial Discrepancy Log', completed: false },
-            { id: 4, label: 'Final Audit Summary Document', completed: false },
-        ]
-    },
-    {
-        id: 3,
-        orderId: '#177',
-        customer: 'Anne Guesser',
-        email: 'anyiafavour@gmail.com',
-        service: 'Premium O-1A Filing',
-        assigned: 'Team Beta',
-        status: SERVICE_STATUS.OPS_REVIEW,
-        date: '2025-11-14 16:02:51 UTC',
-        rework: false,
-        priority: 'Low'
-    },
-    {
-        id: 5,
-        orderId: '#175',
-        customer: 'Biliki Muhammed',
-        email: 'gyjhdsjhd@gmail.com',
-        service: 'Resource Allocation',
-        assigned: 'Team Beta',
-        status: SERVICE_STATUS.MD_APPROVAL,
-        date: '2025-11-14 16:16:34 UTC',
-        rework: false,
-        priority: 'Medium'
     }
 ];
 
@@ -70,7 +27,8 @@ export function WorkflowProvider({ children }) {
             id: Date.now(),
             status: SERVICE_STATUS.AWAITING_PAYMENT,
             date: new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC',
-            rework: false
+            rework: false,
+            isSessionAction: true
         }, ...prev]);
     }, []);
 
@@ -91,7 +49,7 @@ export function WorkflowProvider({ children }) {
     const transitionOrder = useCallback((id, nextStatus) => {
         setOrders(prev => prev.map(o => {
             if (o.id === id) {
-                const updated = { ...o, status: nextStatus };
+                const updated = { ...o, status: nextStatus, isSessionAction: true };
 
                 // [Notification Integration] Simulate Slack/Gmail API calls
                 console.log(`%c[NOTIFICATION ENGINE] Status Change for ${o.orderId}: ${o.status} -> ${nextStatus}`, 'color: #7c3aed; font-weight: bold;');

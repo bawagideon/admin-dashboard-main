@@ -49,6 +49,7 @@ export default function WorkflowTour() {
                 </div>
             ),
             placement: 'right',
+            disableBeacon: true,
             role: [roles.ADMIN, roles.MD, roles.OPS_MANAGER]
         },
         {
@@ -65,6 +66,7 @@ export default function WorkflowTour() {
                 </div>
             ),
             placement: 'top',
+            disableBeacon: true,
             role: [roles.ADMIN]
         },
         {
@@ -78,6 +80,7 @@ export default function WorkflowTour() {
                 </div>
             ),
             placement: 'bottom',
+            disableBeacon: true,
             role: [roles.ADMIN]
         },
         {
@@ -93,6 +96,7 @@ export default function WorkflowTour() {
                 </div>
             ),
             placement: 'top',
+            disableBeacon: true,
             role: [roles.ADMIN]
         },
         {
@@ -109,6 +113,7 @@ export default function WorkflowTour() {
                 </div>
             ),
             placement: 'right',
+            disableBeacon: true,
             role: [roles.ADMIN, roles.MD, roles.OPS_MANAGER]
         },
         {
@@ -125,6 +130,7 @@ export default function WorkflowTour() {
                 </div>
             ),
             placement: 'top',
+            disableBeacon: true,
             role: [roles.ADMIN, roles.OPS_MANAGER]
         },
         {
@@ -141,6 +147,7 @@ export default function WorkflowTour() {
                 </div>
             ),
             placement: 'left',
+            disableBeacon: true,
             role: [roles.TEAM_MEMBER]
         },
         {
@@ -157,6 +164,7 @@ export default function WorkflowTour() {
                 </div>
             ),
             placement: 'top',
+            disableBeacon: true,
             role: [roles.MD]
         }
     ];

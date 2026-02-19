@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Bell, Settings, Menu, Package, X, Check, RefreshCw, Trash2, Eye, ChevronRight, UserCircle, Zap, Users, CheckCircle, ShieldCheck } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useRole } from '../lib/RoleContext';
@@ -15,15 +16,19 @@ export default function Header({ onMenuClick }) {
     const searchRef = useRef(null);
     const roleSelectorRef = useRef(null);
 
+    const navigate = useNavigate();
+
     // Dynamic Blueprint-Aligned Notifications (Optimized with useMemo)
     const notifications = useMemo(() => {
-        return orders.map(o => {
-            if (o.status === SERVICE_STATUS.UNASSIGNED) return { id: o.id, text: 'Payment Confirmed', subtext: `Order ${o.orderId}: Stripe/PayPal hook received. Forwarding to Ops Manager.`, time: 'Just now', icon: 'zap' };
-            if (o.status === SERVICE_STATUS.IN_PROGRESS) return { id: o.id, text: 'Task Assigned', subtext: `Ops Manager routed ${o.orderId} to ${o.assigned}.`, time: '10m ago', icon: 'user' };
-            if (o.status === SERVICE_STATUS.OPS_REVIEW) return { id: o.id, text: 'Evidence Submitted', subtext: `${o.assigned} submitted profiling & documents for ${o.orderId}.`, time: '2h ago', icon: 'check' };
-            if (o.status === SERVICE_STATUS.MD_APPROVAL) return { id: o.id, text: 'QA Approved', subtext: `Ops Manager vetted ${o.orderId} for final MD closure.`, time: '4h ago', icon: 'shield' };
-            return null;
-        }).filter(n => n !== null).slice(0, 5);
+        return orders
+            .filter(o => o.isSessionAction) // Only show notifications for actions during this session
+            .map(o => {
+                if (o.status === SERVICE_STATUS.UNASSIGNED) return { id: o.id, text: 'Payment Confirmed', subtext: `Order ${o.orderId}: Stripe/PayPal hook received. Forwarding to Ops Manager.`, time: 'Just now', icon: 'zap' };
+                if (o.status === SERVICE_STATUS.IN_PROGRESS) return { id: o.id, text: 'Task Assigned', subtext: `Ops Manager routed ${o.orderId} to ${o.assigned}.`, time: '10m ago', icon: 'user' };
+                if (o.status === SERVICE_STATUS.OPS_REVIEW) return { id: o.id, text: 'Evidence Submitted', subtext: `${o.assigned} submitted profiling & documents for ${o.orderId}.`, time: '2h ago', icon: 'check' };
+                if (o.status === SERVICE_STATUS.MD_APPROVAL) return { id: o.id, text: 'QA Approved', subtext: `Ops Manager vetted ${o.orderId} for final MD closure.`, time: '4h ago', icon: 'shield' };
+                return null;
+            }).filter(n => n !== null).slice(0, 5);
     }, [orders]);
 
     // Mock Search Results
@@ -128,6 +133,7 @@ export default function Header({ onMenuClick }) {
                                                     key={role}
                                                     onClick={() => {
                                                         setActiveRole(role);
+                                                        navigate("/");
                                                         setShowRoleSelector(false);
                                                     }}
                                                     className={cn(

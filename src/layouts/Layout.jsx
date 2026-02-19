@@ -10,8 +10,19 @@ export default function Layout() {
     const location = useLocation();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    // [Role Security] Restrict /governance to MD role only
-    if (location.pathname === '/governance' && activeRole !== roles.MD) {
+    // [Role Security] Comprehensive Route Guards
+    const roleRoutes = {
+        '/inbox': [roles.ADMIN],
+        '/mission-control': [roles.TEAM_MEMBER],
+        '/governance': [roles.MD],
+        '/customers': [roles.MD],
+        '/users': [roles.OPS_MANAGER],
+        '/products': [roles.ADMIN, roles.OPS_MANAGER],
+        '/orders': [roles.ADMIN, roles.OPS_MANAGER, roles.MD]
+    };
+
+    const restrictedRoles = roleRoutes[location.pathname];
+    if (restrictedRoles && !restrictedRoles.includes(activeRole)) {
         return <Navigate to="/" replace />;
     }
 

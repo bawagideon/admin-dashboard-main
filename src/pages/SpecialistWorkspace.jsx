@@ -101,78 +101,141 @@ export default function SpecialistWorkspace() {
                             </div>
                         )}
 
-                        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden min-h-[500px] flex flex-col">
-                            <div className="p-6 border-b border-slate-50 flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
-                                        <Zap className="w-6 h-6 text-primary" />
+                        <div className="bg-slate-900 rounded-[2.5rem] border border-slate-800 shadow-2xl overflow-hidden min-h-[600px] flex flex-col relative">
+                            {/* Action Center Header */}
+                            <div className="p-8 border-b border-slate-800 bg-slate-900/50 backdrop-blur-xl sticky top-0 z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-16 h-16 bg-primary/20 rounded-3xl flex items-center justify-center border border-primary/30 shadow-[0_0_20px_rgba(124,58,237,0.2)]">
+                                        <Zap className="w-8 h-8 text-primary animate-pulse" />
                                     </div>
                                     <div>
-                                        <h2 className="text-xl font-bold text-slate-800">{activeTask.service}</h2>
-                                        <p className="text-xs text-slate-400">Task Detail & Evidence Locker</p>
+                                        <div className="flex items-center gap-2">
+                                            <h2 className="text-2xl font-black text-white italic tracking-tighter uppercase">{activeTask.service}</h2>
+                                            <span className="px-2 py-0.5 bg-primary/20 text-primary text-[10px] font-black rounded uppercase tracking-widest border border-primary/30">Action Center</span>
+                                        </div>
+                                        <p className="text-slate-400 text-sm font-medium mt-1">Order {activeTask.orderId} • {activeTask.customer}</p>
                                     </div>
                                 </div>
-                                <button
-                                    onClick={submitForReview}
-                                    className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary/90 transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-primary/20"
-                                >
-                                    <Send className="w-4 h-4" />
-                                    Submit for Review
-                                </button>
+                                <div className="flex items-center gap-3">
+                                    <button
+                                        onClick={submitForReview}
+                                        className="group relative flex items-center gap-2 px-8 py-3.5 bg-primary text-white rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-primary-hover transition-all hover:scale-[1.05] active:scale-95 shadow-[0_10px_30px_rgba(124,58,237,0.4)]"
+                                    >
+                                        <div className="absolute inset-0 bg-white/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity blur" />
+                                        <Send className="w-4 h-4 relative z-10" />
+                                        <span className="relative z-10">Submit for Approval</span>
+                                    </button>
+                                </div>
                             </div>
 
-                            <div className="flex-1 grid grid-cols-1 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-slate-50">
-                                <div className="md:col-span-3 p-6 space-y-6">
-                                    <div>
-                                        <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                            <ClipboardCheck className="w-4 h-4 text-primary" />
-                                            Evidence Checklist
-                                        </h4>
-                                        <div id="evidence-locker" className="space-y-3">
+                            <div className="flex-1 grid grid-cols-1 lg:grid-cols-5 overflow-hidden">
+                                {/* The mighty Evidence Locker */}
+                                <div className="lg:col-span-3 p-8 space-y-8 overflow-y-auto custom-scrollbar">
+                                    <div id="evidence-locker">
+                                        <div className="flex items-center justify-between mb-6">
+                                            <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                                <div className="w-1.5 h-1.5 bg-primary rounded-full shadow-[0_0_8px_rgba(124,58,237,0.8)]" />
+                                                Box 4: Evidence Locker
+                                            </h4>
+                                            <span className="text-[10px] text-slate-500 font-mono tracking-tighter uppercase">Profiling & Documents Required</span>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 gap-4">
                                             {activeTask.checklist?.map((item) => (
                                                 <button
                                                     key={item.id}
                                                     onClick={() => toggleCheck(item.id)}
                                                     className={cn(
-                                                        "w-full flex items-center justify-between p-4 rounded-2xl border transition-all duration-200 group text-left",
-                                                        item.completed ? "bg-green-50/30 border-green-100" : "bg-slate-50/50 border-slate-100 hover:border-slate-200"
+                                                        "group w-full flex items-center justify-between p-5 rounded-2xl border-2 transition-all duration-300 relative overflow-hidden",
+                                                        item.completed
+                                                            ? "bg-emerald-500/5 border-emerald-500/20"
+                                                            : "bg-slate-800/20 border-slate-800 hover:border-primary/50"
                                                     )}
                                                 >
-                                                    <div className="flex items-center gap-4">
-                                                        <div className={cn(
-                                                            "w-5 h-5 rounded-md flex items-center justify-center transition-colors",
-                                                            item.completed ? "bg-green-500 text-white" : "bg-white border-2 border-slate-200"
-                                                        )}>
-                                                            {item.completed && <CheckCircle2 className="w-3.5 h-3.5" />}
-                                                        </div>
-                                                        <span className={cn("text-xs font-bold transition-colors", item.completed ? "text-green-700" : "text-slate-600")}>
-                                                            {item.label}
-                                                        </span>
-                                                    </div>
-                                                    {!item.completed && (
-                                                        <FileUp className="w-4 h-4 text-slate-300 group-hover:text-primary transition-colors" />
+                                                    {item.completed && (
+                                                        <div className="absolute inset-0 bg-emerald-500/5 animate-pulse" />
                                                     )}
+                                                    <div className="flex items-center gap-5 relative z-10">
+                                                        <div className={cn(
+                                                            "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 shadow-lg",
+                                                            item.completed
+                                                                ? "bg-emerald-500 text-white rotate-[360deg] scale-110"
+                                                                : "bg-slate-800 text-slate-500 border border-slate-700"
+                                                        )}>
+                                                            {item.completed ? <CheckCircle2 className="w-6 h-6" /> : <ClipboardCheck className="w-5 h-5" />}
+                                                        </div>
+                                                        <div className="flex flex-col text-left">
+                                                            <span className={cn(
+                                                                "text-sm font-black tracking-tight transition-colors",
+                                                                item.completed ? "text-emerald-400" : "text-slate-300"
+                                                            )}>
+                                                                {item.label}
+                                                            </span>
+                                                            <span className="text-[10px] text-slate-500 font-medium uppercase mt-0.5 tracking-wider">
+                                                                {item.completed ? "Evidence Secured" : "Awaiting Verification"}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="relative z-10">
+                                                        {item.completed ? (
+                                                            <div className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                                                                <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full shadow-[0_0_5px_rgba(52,211,153,0.5)]" />
+                                                                <span className="text-[10px] text-emerald-400 font-black uppercase tracking-widest">Verified</span>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="p-2.5 bg-slate-800 rounded-xl text-primary transition-all group-hover:scale-110 group-hover:bg-primary group-hover:text-white group-hover:shadow-[0_0_15px_rgba(124,58,237,0.3)]">
+                                                                <FileUp className="w-5 h-5" />
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </button>
                                             ))}
                                         </div>
                                     </div>
 
-                                    <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between">
-                                        <div className="flex flex-col">
-                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Progress</span>
-                                            <span className="text-lg font-black text-slate-800">
-                                                {activeTask.checklist ? Math.round((activeTask.checklist.filter(c => c.completed).length / activeTask.checklist.length) * 100) : 0}%
-                                            </span>
+                                    {/* Action Center Progress Area */}
+                                    <div className="p-8 bg-slate-800/30 rounded-[2rem] border border-slate-800/50">
+                                        <div className="flex items-end justify-between mb-4">
+                                            <div>
+                                                <h5 className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">Execution Score</h5>
+                                                <div className="text-4xl font-black text-white italic tracking-tighter">
+                                                    {activeTask.checklist ? Math.round((activeTask.checklist.filter(c => c.completed).length / activeTask.checklist.length) * 100) : 0}%
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <span className="text-[10px] font-bold text-slate-500 uppercase block leading-none mb-1">Status</span>
+                                                <span className="text-xs font-black text-emerald-400 px-3 py-1 bg-emerald-500/10 rounded-lg border border-emerald-500/20">Active Session</span>
+                                            </div>
+                                        </div>
+                                        <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700 p-0.5">
+                                            <div
+                                                className="h-full bg-gradient-to-r from-primary via-purple-500 to-indigo-500 rounded-full transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(124,58,237,0.5)]"
+                                                style={{ width: `${activeTask.checklist ? (activeTask.checklist.filter(c => c.completed).length / activeTask.checklist.length) * 100 : 0}%` }}
+                                            />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="md:col-span-2 p-6 bg-slate-50/30">
-                                    <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-                                        <MessageSquare className="w-4 h-4 text-primary" />
-                                        Internal Timeline
-                                    </h4>
-                                    <RequestTimeline request={activeTask} />
+                                {/* Timeline Sidebar */}
+                                <div className="lg:col-span-2 bg-slate-900/50 p-8 border-l border-slate-800 flex flex-col gap-8">
+                                    <div className="space-y-6">
+                                        <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                            <MessageSquare className="w-4 h-4 text-primary" />
+                                            Mission Log
+                                        </h4>
+                                        <RequestTimeline request={activeTask} />
+                                    </div>
+
+                                    {/* Additional info block */}
+                                    <div className="mt-auto p-6 bg-primary/5 rounded-3xl border border-primary/10">
+                                        <div className="flex items-center gap-3 mb-3">
+                                            <AlertCircle className="w-5 h-5 text-primary" />
+                                            <span className="text-xs font-black text-white uppercase tracking-wider">Mission Briefing</span>
+                                        </div>
+                                        <p className="text-[11px] text-slate-400 leading-relaxed italic">
+                                            "Ensure all evidence is secured before final submission. Ops Managers will vet the profiling documents before executive approval."
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
