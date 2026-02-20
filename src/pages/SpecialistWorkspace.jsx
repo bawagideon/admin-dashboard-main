@@ -14,6 +14,7 @@ import RequestTimeline from '../components/RequestTimeline';
 import { useWorkflow } from '../lib/WorkflowContext';
 import { SERVICE_STATUS } from '../lib/constants';
 import MissionControlTour from '../components/tours/MissionControlTour';
+import { toast } from 'sonner';
 
 export default function SpecialistWorkspace() {
     const { orders, updateOrder, transitionOrder } = useWorkflow();
@@ -30,14 +31,22 @@ export default function SpecialistWorkspace() {
 
     const submitForReview = () => {
         transitionOrder(activeTask.id, SERVICE_STATUS.OPS_REVIEW);
-        alert('Mission complete! Task submitted to Ops Manager for review.');
+        toast.success('Mission complete!', {
+            description: 'Task submitted to Ops Manager for review.',
+        });
     };
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-2xl font-bold text-slate-800 tracking-tight">Specialist Mission Control</h1>
-                <p className="text-slate-500 text-sm">Active Assignments: {tasks.length}</p>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Specialist Mission Control</h1>
+                    <p className="text-slate-500 text-xs md:text-sm">Active Assignments: {tasks.length}</p>
+                </div>
+                <div className="bg-slate-100 px-4 py-2 rounded-xl border border-slate-200 flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-slate-400" />
+                    <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">Sync: Real-time</span>
+                </div>
             </div>
 
             {tasks.length > 0 ? (
@@ -102,9 +111,9 @@ export default function SpecialistWorkspace() {
                             </div>
                         )}
 
-                        <div className="bg-slate-900 rounded-[2.5rem] border border-slate-800 shadow-2xl overflow-hidden min-h-[600px] flex flex-col relative">
+                        <div className="bg-slate-900 rounded-[2rem] md:rounded-[2.5rem] border border-slate-800 shadow-2xl overflow-hidden min-h-[400px] md:min-h-[600px] flex flex-col relative transition-all duration-500">
                             {/* Action Center Header */}
-                            <div className="mission-control-header p-8 border-b border-slate-800 bg-slate-900/50 backdrop-blur-xl sticky top-0 z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div className="mission-control-header p-4 md:p-8 border-b border-slate-800 bg-slate-900/50 backdrop-blur-xl sticky top-0 z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                                 <div className="flex items-center gap-4">
                                     <div className="w-16 h-16 bg-primary/20 rounded-3xl flex items-center justify-center border border-primary/30 shadow-[0_0_20px_rgba(124,58,237,0.2)]">
                                         <Zap className="w-8 h-8 text-primary animate-pulse" />
@@ -131,14 +140,14 @@ export default function SpecialistWorkspace() {
 
                             <div className="flex-1 grid grid-cols-1 lg:grid-cols-5 overflow-hidden">
                                 {/* The mighty Evidence Locker */}
-                                <div className="lg:col-span-3 p-8 space-y-8 overflow-y-auto custom-scrollbar">
+                                <div className="lg:col-span-3 p-4 md:p-8 space-y-6 md:space-y-8 overflow-y-auto custom-scrollbar">
                                     <div id="evidence-locker">
-                                        <div className="flex items-center justify-between mb-6">
-                                            <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 md:mb-6 gap-2">
+                                            <h4 className="text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
                                                 <div className="w-1.5 h-1.5 bg-primary rounded-full shadow-[0_0_8px_rgba(124,58,237,0.8)]" />
                                                 Box 4: Evidence Locker
                                             </h4>
-                                            <span className="text-[10px] text-slate-500 font-mono tracking-tighter uppercase">Profiling & Documents Required</span>
+                                            <span className="text-[9px] md:text-[10px] text-slate-500 font-mono tracking-tighter uppercase">Profiling & Documents Required</span>
                                         </div>
 
                                         <div className="grid grid-cols-1 gap-4">
@@ -218,9 +227,9 @@ export default function SpecialistWorkspace() {
                                 </div>
 
                                 {/* Timeline Sidebar */}
-                                <div className="lg:col-span-2 bg-slate-900/50 p-8 border-l border-slate-800 flex flex-col gap-8">
+                                <div className="lg:col-span-2 bg-slate-900/50 p-4 md:p-8 border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col gap-8">
                                     <div className="space-y-6">
-                                        <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                                        <h4 className="text-[10px] md:text-xs font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
                                             <MessageSquare className="w-4 h-4 text-primary" />
                                             Mission Log
                                         </h4>

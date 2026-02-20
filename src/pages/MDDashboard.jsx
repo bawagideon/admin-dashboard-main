@@ -16,6 +16,7 @@ import RequestTimeline from '../components/RequestTimeline';
 import { useWorkflow } from '../lib/WorkflowContext';
 import { SERVICE_STATUS } from '../lib/constants';
 import GovernanceTour from '../components/tours/GovernanceTour';
+import { toast } from 'sonner';
 
 export default function MDDashboard() {
     const { orders, bulkClose, closeOrder } = useWorkflow();
@@ -35,7 +36,9 @@ export default function MDDashboard() {
         const count = selectedTasks.length;
         bulkClose(selectedTasks);
         setSelectedTasks([]);
-        alert(`Governance complete: ${count} cases approved and moved to final closing simulation.`);
+        toast.success('Governance complete!', {
+            description: `${count} cases approved and moved to final closing simulation.`,
+        });
     };
 
     const handleCloseCase = (task) => {
@@ -44,24 +47,26 @@ export default function MDDashboard() {
             closeOrder(task.id);
             setViewingTask(null);
             setIsArchiving(false);
-            alert(`Case ${task.orderId} Closed. Completion email auto-generated for ${task.customer}. Record archived.`);
+            toast.success('Case Closed Successfully', {
+                description: `Completion email generated for ${task.customer}. Record archived.`,
+            });
         }, 1500);
     };
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
-                        <ShieldCheck className="w-7 h-7 text-primary" />
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-xl md:text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
+                        <ShieldCheck className="w-6 h-6 md:w-7 md:h-7 text-primary" />
                         Executive Governance
                     </h1>
-                    <p className="text-slate-500 text-sm">Vetting requests awaiting Managing Director final approval</p>
+                    <p className="text-slate-500 text-xs md:text-sm">Vetting requests awaiting MD final approval</p>
                 </div>
                 {selectedTasks.length > 0 && (
                     <button
                         onClick={handleBulkApprove}
-                        className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl text-sm font-bold shadow-lg hover:bg-slate-800 transition-all animate-in slide-in-from-right-4"
+                        className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl text-xs md:text-sm font-bold shadow-lg hover:bg-slate-800 transition-all animate-in slide-in-from-right-4"
                     >
                         <Zap className="w-4 h-4 text-primary fill-primary" />
                         Bulk Approve {selectedTasks.length} Cases
@@ -120,25 +125,25 @@ export default function MDDashboard() {
                 <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden flex flex-col min-h-[500px]">
                     {viewingTask ? (
                         <>
-                            <div className="p-6 border-b border-slate-50 space-y-4">
-                                <div className="flex justify-between items-start">
+                            <div className="p-4 md:p-6 border-b border-slate-50 space-y-4">
+                                <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                                     <div>
-                                        <h2 className="text-xl font-bold text-slate-800">{viewingTask.service}</h2>
-                                        <p className="text-xs text-slate-400 mt-1">Final Specialist Execution Review</p>
+                                        <h2 className="text-lg md:text-xl font-bold text-slate-800">{viewingTask.service}</h2>
+                                        <p className="text-[10px] md:text-xs text-slate-400 mt-1 uppercase font-black tracking-widest">Final Execution Review</p>
                                     </div>
-                                    <div className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase rounded-lg tracking-widest">
+                                    <div className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase rounded-lg tracking-widest whitespace-nowrap">
                                         Ready for Closure
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Impact Score</span>
-                                        <span className="text-sm font-bold text-slate-800">Operational Alpha</span>
+                                        <span className="text-xs md:text-sm font-bold text-slate-800">Operational Alpha</span>
                                     </div>
                                     <div className="p-3 bg-slate-50 rounded-xl border border-slate-100">
                                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-1">Closing Doc</span>
-                                        <span className="text-sm font-bold text-primary flex items-center gap-1">
+                                        <span className="text-xs md:text-sm font-bold text-primary flex items-center gap-1">
                                             <FileText className="w-3.5 h-3.5" />
                                             View Report
                                         </span>
@@ -154,12 +159,12 @@ export default function MDDashboard() {
                                 <RequestTimeline request={viewingTask} />
                             </div>
 
-                            <div className="p-6 bg-white border-t border-slate-50 flex items-center gap-3">
+                            <div className="p-4 md:p-6 bg-white border-t border-slate-50 flex flex-col sm:flex-row items-center gap-3">
                                 <button
                                     id="md-approve-btn"
                                     onClick={() => handleCloseCase(viewingTask)}
                                     disabled={isArchiving}
-                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
+                                    className="w-full sm:flex-1 flex items-center justify-center gap-2 px-6 py-3.5 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary-hover transition-all shadow-lg shadow-primary/20 disabled:opacity-50"
                                 >
                                     {isArchiving ? (
                                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -168,12 +173,14 @@ export default function MDDashboard() {
                                     )}
                                     Sign & Close Case
                                 </button>
-                                <button className="p-3 border border-slate-200 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors">
-                                    <Mail className="w-5 h-5" />
-                                </button>
-                                <button className="p-3 border border-slate-200 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors">
-                                    <Archive className="w-5 h-5" />
-                                </button>
+                                <div className="flex gap-3 w-full sm:w-auto">
+                                    <button className="flex-1 sm:flex-none p-3.5 border border-slate-200 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors flex justify-center">
+                                        <Mail className="w-5 h-5" />
+                                    </button>
+                                    <button className="flex-1 sm:flex-none p-3.5 border border-slate-200 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors flex justify-center">
+                                        <Archive className="w-5 h-5" />
+                                    </button>
+                                </div>
                             </div>
                         </>
                     ) : (

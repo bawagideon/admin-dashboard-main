@@ -53,16 +53,16 @@ export default function Header({ onMenuClick }) {
 
     return (
         <header className="h-20 bg-white border-b border-gray-100 sticky top-0 z-30 w-full font-sans transition-all duration-300">
-            <div className="max-w-7xl mx-auto h-full flex items-center justify-between px-4 md:px-10">
-                <div className="flex items-center gap-4 flex-1">
+            <div className="max-w-7xl mx-auto h-full flex items-center justify-between px-3 md:px-10">
+                <div className="flex items-center gap-2 md:gap-4 flex-1">
                     <button onClick={onMenuClick} className="md:hidden p-2 text-slate-500 hover:bg-gray-100 rounded-lg">
-                        <Menu className="w-6 h-6" />
+                        <Menu className="w-5 h-5" />
                     </button>
                     <h2 className="text-xl md:text-2xl font-bold text-primary uppercase tracking-widest hidden md:block">Dashboard</h2>
-                    <h2 className="text-xl font-bold text-primary uppercase tracking-widest md:hidden">Dangote</h2>
+                    <h2 className="text-lg font-bold text-primary uppercase tracking-widest md:hidden">Dangote</h2>
                 </div>
 
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-3 md:gap-6">
                     {/* Search Bar */}
                     <div className="relative hidden md:block w-96" ref={searchRef}>
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -109,17 +109,17 @@ export default function Header({ onMenuClick }) {
                     {/* Icons */}
                     <div className="flex items-center gap-3">
                         {/* Role Selector */}
-                        <div className="relative mr-2" ref={roleSelectorRef}>
+                        <div className="relative mr-0 md:mr-2" ref={roleSelectorRef}>
                             <button
                                 onClick={() => setShowRoleSelector(!showRoleSelector)}
                                 className={cn(
-                                    "flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-bold transition-all",
+                                    "flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-lg border border-gray-200 text-[10px] md:text-xs font-bold transition-all",
                                     "hover:bg-gray-50 text-slate-600 bg-white shadow-sm"
                                 )}
                             >
                                 <UserCircle className="w-4 h-4 text-primary" />
-                                <span className="hidden sm:inline">Viewing as:</span>
-                                <span className="text-primary">{activeRole}</span>
+                                <span className="hidden md:inline">Viewing as:</span>
+                                <span className="text-primary truncate max-w-[50px] sm:max-w-none">{activeRole}</span>
                             </button>
 
                             {showRoleSelector && (
@@ -166,7 +166,7 @@ export default function Header({ onMenuClick }) {
                             {showNotifications && (
                                 <>
                                     <div className="fixed inset-0 z-10" onClick={() => setShowNotifications(false)}></div>
-                                    <div className="absolute top-full mt-2 w-[90vw] md:w-96 bg-white rounded-xl shadow-2xl border border-gray-100 z-20 animate-in fade-in slide-in-from-top-2 duration-200 right-[-60px] md:right-0">
+                                    <div className="absolute top-full mt-2 w-[85vw] md:w-96 bg-white rounded-xl shadow-2xl border border-gray-100 z-20 animate-in fade-in slide-in-from-top-2 duration-200 -right-12 md:right-0">
                                         <div className="p-4 border-b border-gray-100 flex justify-between items-center">
                                             <div className="flex items-center gap-2">
                                                 <span className="font-bold text-lg text-slate-800">Operational Alerts ({notifications.length})</span>

@@ -12,6 +12,7 @@ import RegisteredUsers from './pages/RegisteredUsers';
 import AdminInbox from './pages/AdminInbox';
 import SpecialistWorkspace from './pages/SpecialistWorkspace';
 import MDDashboard from './pages/MDDashboard';
+import { Toaster } from 'sonner';
 
 // Placeholders for other pages
 const Placeholder = ({ title }) => (
@@ -28,6 +29,7 @@ function App() {
   return (
     <WorkflowProvider>
       <RoleProvider>
+        <Toaster expand richColors position="top-right" closeButton />
         <BrowserRouter>
           <Routes>
             <Route element={<Layout />}>

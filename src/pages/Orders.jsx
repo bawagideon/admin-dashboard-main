@@ -9,6 +9,7 @@ import { useRole } from '../lib/RoleContext';
 import { useWorkflow } from '../lib/WorkflowContext';
 import { SERVICE_STATUS } from '../lib/constants';
 import OpsOrdersTour from '../components/tours/OpsOrdersTour';
+import { toast } from 'sonner';
 
 const initialOrders = [
     { id: 1, orderId: '#179', customer: 'Anne Guesser', email: 'anyiafavour@gmail.com', service: 'Pipeline Inspection', assigned: 'Unassigned', status: 'Unassigned', date: '2025-11-14 15:56:24 UTC', rework: false },
@@ -68,6 +69,79 @@ const SLATimer = ({ date, status }) => {
     );
 };
 
+
+const OrderActions = ({
+    order,
+    activeRole,
+    roles,
+    processingPaymentId,
+    simulatePayment,
+    assigningId,
+    setAssigningId,
+    handleAssign,
+    setReviewingOrder,
+    isMobile = false
+}) => {
+    return (
+        <div className={cn("flex items-center gap-2", isMobile ? "w-full justify-end" : "relative")}>
+            {order.status === SERVICE_STATUS.AWAITING_PAYMENT && (activeRole === roles.ADMIN || activeRole === roles.MD) && (
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        simulatePayment(order.id);
+                    }}
+                    disabled={processingPaymentId === order.id}
+                    className="px-3 py-1 bg-yellow-500 text-white text-[10px] font-bold rounded-md hover:bg-yellow-600 transition flex items-center gap-1 disabled:opacity-50"
+                >
+                    {processingPaymentId === order.id ? (
+                        <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    ) : (
+                        <CreditCard className="w-3 h-3" />
+                    )}
+                    {isMobile ? 'Pay' : 'Stripe/PayPal Hook'}
+                </button>
+            )}
+
+            {order.status === SERVICE_STATUS.UNASSIGNED && (activeRole === roles.OPS_MANAGER || activeRole === roles.ADMIN) && (
+                <div className="relative">
+                    <button
+                        id="smart-assign-btn"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setAssigningId(assigningId === order.id ? null : order.id);
+                        }}
+                        className="px-3 py-1 bg-primary text-white text-[10px] font-bold rounded-md hover:bg-primary/90 transition flex items-center gap-1"
+                    >
+                        <Zap className="w-3 h-3" />
+                        {isMobile ? 'Assign' : 'Smart Assign'}
+                    </button>
+                    {assigningId === order.id && (
+                        <SmartAssignPopover
+                            request={order}
+                            onAssign={(team) => handleAssign(order.id, team)}
+                            onClose={() => setAssigningId(null)}
+                        />
+                    )}
+                </div>
+            )}
+
+            {order.status === SERVICE_STATUS.OPS_REVIEW && (activeRole === roles.OPS_MANAGER || activeRole === roles.ADMIN) && (
+                <button
+                    id="perform-qa-btn"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setReviewingOrder(order);
+                    }}
+                    className="px-3 py-1 bg-purple-600 text-white text-[10px] font-bold rounded-md hover:bg-purple-700 transition flex items-center gap-1 shadow-sm"
+                >
+                    <ClipboardCheck className="w-3 h-3" />
+                    {isMobile ? 'QA' : 'Perform QA Review'}
+                </button>
+            )}
+        </div>
+    );
+};
+
 export default function Orders() {
     const { activeRole, roles } = useRole();
     const { orders, updateOrder, transitionOrder, setRework } = useWorkflow();
@@ -104,6 +178,9 @@ export default function Orders() {
         setTimeout(() => {
             transitionOrder(id, SERVICE_STATUS.UNASSIGNED);
             setProcessingPaymentId(null);
+            toast.success('Payment Verified', {
+                description: 'Webhook confirmed. Request moved to Unassigned.',
+            });
         }, 1500);
     };
 
@@ -113,10 +190,16 @@ export default function Orders() {
             status: SERVICE_STATUS.IN_PROGRESS
         });
         setAssigningId(null);
+        toast.success('Team Assigned', {
+            description: `Request successfully routed to ${teamName}.`,
+        });
     };
 
     const handleRework = (id) => {
         setRework(id, 'Manager requested rework after quality check.');
+        toast.error('Rework Requested', {
+            description: 'Specialist notified. Request sent back to Mission Control.',
+        });
     };
 
     return (
@@ -126,7 +209,7 @@ export default function Orders() {
                 <p className="text-slate-500 text-sm">Active Requests: {orders.length}</p>
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
                 <div className="p-4 md:p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
                     <div className="relative flex-1 w-full md:max-w-md">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -151,7 +234,7 @@ export default function Orders() {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="hidden md:block">
                     <table className="w-full text-left border-collapse min-w-[800px]">
                         <thead>
                             <tr className="bg-gray-50/50 border-b border-gray-100">
@@ -222,52 +305,17 @@ export default function Orders() {
                                     <td className="px-6 py-4 text-xs text-slate-500 font-mono">{order.date}</td>
                                     <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                                         <div className="flex items-center gap-2 relative">
-                                            {order.status === SERVICE_STATUS.AWAITING_PAYMENT && (activeRole === roles.ADMIN || activeRole === roles.MD) && (
-                                                <button
-                                                    onClick={() => simulatePayment(order.id)}
-                                                    disabled={processingPaymentId === order.id}
-                                                    className="px-3 py-1 bg-yellow-500 text-white text-[10px] font-bold rounded-md hover:bg-yellow-600 transition flex items-center gap-1 disabled:opacity-50"
-                                                >
-                                                    {processingPaymentId === order.id ? (
-                                                        <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                                    ) : (
-                                                        <CreditCard className="w-3 h-3" />
-                                                    )}
-                                                    Stripe/PayPal Hook
-                                                </button>
-                                            )}
-
-                                            {order.status === SERVICE_STATUS.UNASSIGNED && (activeRole === roles.OPS_MANAGER || activeRole === roles.ADMIN) && (
-                                                <div className="relative">
-                                                    <button
-                                                        id="smart-assign-btn"
-                                                        onClick={() => setAssigningId(assigningId === order.id ? null : order.id)}
-                                                        className="px-3 py-1 bg-primary text-white text-[10px] font-bold rounded-md hover:bg-primary/90 transition flex items-center gap-1"
-                                                    >
-                                                        <Zap className="w-3 h-3" />
-                                                        Smart Assign
-                                                    </button>
-                                                    {assigningId === order.id && (
-                                                        <SmartAssignPopover
-                                                            request={order}
-                                                            onAssign={(team) => handleAssign(order.id, team)}
-                                                            onClose={() => setAssigningId(null)}
-                                                        />
-                                                    )}
-                                                </div>
-                                            )}
-
-                                            {order.status === SERVICE_STATUS.OPS_REVIEW && (activeRole === roles.OPS_MANAGER || activeRole === roles.ADMIN) && (
-                                                <button
-                                                    id="perform-qa-btn"
-                                                    onClick={() => setReviewingOrder(order)}
-                                                    className="px-3 py-1 bg-purple-600 text-white text-[10px] font-bold rounded-md hover:bg-purple-700 transition flex items-center gap-1 shadow-sm"
-                                                >
-                                                    <ClipboardCheck className="w-3 h-3" />
-                                                    Perform QA Review
-                                                </button>
-                                            )}
-
+                                            <OrderActions
+                                                order={order}
+                                                activeRole={activeRole}
+                                                roles={roles}
+                                                processingPaymentId={processingPaymentId}
+                                                simulatePayment={simulatePayment}
+                                                assigningId={assigningId}
+                                                setAssigningId={setAssigningId}
+                                                handleAssign={handleAssign}
+                                                setReviewingOrder={setReviewingOrder}
+                                            />
                                             <button className="text-slate-400 hover:text-primary transition">
                                                 <MoreHorizontal className="w-5 h-5" />
                                             </button>
@@ -277,6 +325,79 @@ export default function Orders() {
                             ))}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Mobile Card View */}
+                <div className="md:hidden divide-y divide-gray-100">
+                    {filteredOrders.map((order) => (
+                        <div
+                            key={order.id}
+                            className={cn(
+                                "p-4 space-y-4 active:bg-gray-50 transition-colors",
+                                selectedOrders.includes(order.id) && "bg-primary/5"
+                            )}
+                            onClick={() => setViewingRequest(order)}
+                        >
+                            <div className="flex justify-between items-start">
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        className="rounded border-gray-300 text-primary h-4 w-4"
+                                        checked={selectedOrders.includes(order.id)}
+                                        onChange={(e) => {
+                                            e.stopPropagation();
+                                            toggleSelect(order.id);
+                                        }}
+                                    />
+                                    <div>
+                                        <span className="text-[10px] font-black text-primary uppercase tracking-widest">{order.orderId}</span>
+                                        <h4 className="text-sm font-bold text-slate-800">{order.customer}</h4>
+                                    </div>
+                                </div>
+                                <span className={cn(
+                                    "px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider border",
+                                    order.status === SERVICE_STATUS.AWAITING_PAYMENT ? 'bg-yellow-50 border-yellow-200 text-yellow-700' :
+                                        order.status === SERVICE_STATUS.UNASSIGNED ? 'bg-red-50 border-red-200 text-red-700' :
+                                            order.status === SERVICE_STATUS.IN_PROGRESS ? 'bg-blue-50 border-blue-200 text-blue-700' :
+                                                order.status === SERVICE_STATUS.OPS_REVIEW ? 'bg-purple-50 border-purple-200 text-purple-700' :
+                                                    order.status === SERVICE_STATUS.MD_APPROVAL ? 'bg-orange-50 border-orange-200 text-orange-700' :
+                                                        'bg-green-50 border-green-200 text-green-700'
+                                )}>
+                                    {order.status}
+                                </span>
+                            </div>
+
+                            <div className="space-y-2 pl-7">
+                                <div className="flex items-center gap-2 text-xs text-slate-600">
+                                    <Zap className="w-3 h-3 text-slate-400" />
+                                    {order.service}
+                                </div>
+                                <div className="flex items-center gap-2 text-xs text-slate-600">
+                                    <div className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[8px] font-bold text-slate-500">
+                                        {order.assigned === 'Unassigned' ? '?' : order.assigned.split(' ').map(n => n[0]).join('')}
+                                    </div>
+                                    <span className="font-medium">{order.assigned}</span>
+                                </div>
+                                <div className="flex items-center justify-between pt-2">
+                                    <SLATimer date={order.date} status={order.status} />
+                                    <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                        <OrderActions
+                                            order={order}
+                                            activeRole={activeRole}
+                                            roles={roles}
+                                            processingPaymentId={processingPaymentId}
+                                            simulatePayment={simulatePayment}
+                                            assigningId={assigningId}
+                                            setAssigningId={setAssigningId}
+                                            handleAssign={handleAssign}
+                                            setReviewingOrder={setReviewingOrder}
+                                            isMobile
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
 
@@ -335,6 +456,9 @@ export default function Orders() {
                     onApprove={() => {
                         transitionOrder(reviewingOrder.id, SERVICE_STATUS.MD_APPROVAL);
                         setReviewingOrder(null);
+                        toast.info('QA Approved', {
+                            description: 'Request moving to Executive Governance.',
+                        });
                     }}
                     onReject={() => {
                         handleRework(reviewingOrder.id);

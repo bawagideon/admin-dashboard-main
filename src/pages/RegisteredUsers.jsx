@@ -41,9 +41,9 @@ export default function RegisteredUsers() {
     return (
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Team Workload Management</h1>
-                    <p className="text-slate-500 text-sm">Real-time resource allocation and capacity monitoring</p>
+                <div className="flex flex-col gap-1">
+                    <h1 className="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Team Management</h1>
+                    <p className="text-slate-500 text-xs md:text-sm">Real-time resource allocation and capacity</p>
                 </div>
                 <div className="relative w-full md:w-80">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -69,33 +69,30 @@ export default function RegisteredUsers() {
                     <table className="w-full text-left border-collapse min-w-[900px]">
                         <thead>
                             <tr className="bg-gray-50 border-b border-gray-100">
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Team & Lead</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Current Workload</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Status</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Active Tasks</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Last Activity</th>
-                                <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Actions</th>
+                                <th className="px-4 md:px-6 py-4 text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Team & Lead</th>
+                                <th className="px-4 md:px-6 py-4 text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest">Workload</th>
+                                <th className="px-4 md:px-6 py-4 text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest">Status</th>
+                                <th className="px-4 md:px-6 py-4 text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap">Active Tasks</th>
+                                <th className="px-4 md:px-6 py-4 text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap hidden sm:table-cell">Last Activity</th>
+                                <th className="px-4 md:px-6 py-4 text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest"></th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {filteredTeams.map((team) => (
                                 <tr key={team.id} className="hover:bg-gray-50 transition">
-                                    <td className="px-6 py-4">
+                                    <td className="px-4 md:px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center text-white font-bold text-xs">
+                                            <div className="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center text-white font-bold text-xs shrink-0">
                                                 T{team.id}
                                             </div>
-                                            <div className="flex flex-col">
-                                                <span className="font-bold text-slate-800 text-sm">{team.name}</span>
-                                                <span className="text-xs text-slate-400">Lead: {team.lead} • {team.members} members</span>
+                                            <div className="flex flex-col min-w-[120px]">
+                                                <span className="font-bold text-slate-800 text-sm truncate">{team.name}</span>
+                                                <span className="text-[10px] md:text-xs text-slate-400">Lead: {team.lead}</span>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-4 md:px-6 py-4">
                                         <div className="w-full max-w-[150px] space-y-1.5">
-                                            <div className="flex justify-between text-[10px] font-mono text-slate-500">
-                                                <span>{team.workload}% Cap</span>
-                                            </div>
                                             <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
                                                 <div
                                                     className={cn(
@@ -107,23 +104,25 @@ export default function RegisteredUsers() {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider ${team.status === 'Optimal' ? 'bg-green-50 text-green-700 border-green-200' :
+                                    <td className="px-4 md:px-6 py-4">
+                                        <span className={`inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold border uppercase tracking-wider ${team.status === 'Optimal' ? 'bg-green-50 text-green-700 border-green-200' :
                                             team.status === 'Overloaded' ? 'bg-red-50 text-red-700 border-red-200' :
                                                 'bg-blue-50 text-blue-700 border-blue-200'
                                             }`}>
                                             {team.status}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 text-sm font-bold text-slate-700">
-                                        {team.activeTasks} Tasks
+                                    <td className="px-4 md:px-6 py-4 text-xs font-bold text-slate-700">
+                                        {team.activeTasks}
                                     </td>
-                                    <td className="px-6 py-4 text-xs text-slate-500 flex items-center gap-1.5 align-middle h-full">
-                                        <Clock className="w-3 h-3" /> {team.lastActive}
+                                    <td className="px-4 md:px-6 py-4 text-xs text-slate-500 hidden sm:table-cell">
+                                        <div className="flex items-center gap-1.5 whitespace-nowrap">
+                                            <Clock className="w-3 h-3" /> {team.lastActive}
+                                        </div>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <button className="text-primary hover:text-primary/80 font-bold text-xs transition">
-                                            View Schedule
+                                    <td className="px-4 md:px-6 py-4 text-right">
+                                        <button className="text-primary hover:text-primary/80 font-bold text-xs transition uppercase tracking-widest">
+                                            Logs
                                         </button>
                                     </td>
                                 </tr>
