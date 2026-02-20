@@ -13,6 +13,7 @@ import { cn } from '../lib/utils';
 import RequestTimeline from '../components/RequestTimeline';
 import { useWorkflow } from '../lib/WorkflowContext';
 import { SERVICE_STATUS } from '../lib/constants';
+import MissionControlTour from '../components/tours/MissionControlTour';
 
 export default function SpecialistWorkspace() {
     const { orders, updateOrder, transitionOrder } = useWorkflow();
@@ -103,7 +104,7 @@ export default function SpecialistWorkspace() {
 
                         <div className="bg-slate-900 rounded-[2.5rem] border border-slate-800 shadow-2xl overflow-hidden min-h-[600px] flex flex-col relative">
                             {/* Action Center Header */}
-                            <div className="p-8 border-b border-slate-800 bg-slate-900/50 backdrop-blur-xl sticky top-0 z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div className="mission-control-header p-8 border-b border-slate-800 bg-slate-900/50 backdrop-blur-xl sticky top-0 z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                                 <div className="flex items-center gap-4">
                                     <div className="w-16 h-16 bg-primary/20 rounded-3xl flex items-center justify-center border border-primary/30 shadow-[0_0_20px_rgba(124,58,237,0.2)]">
                                         <Zap className="w-8 h-8 text-primary animate-pulse" />
@@ -252,6 +253,7 @@ export default function SpecialistWorkspace() {
                     </p>
                 </div>
             )}
+            <MissionControlTour />
         </div>
     );
 }

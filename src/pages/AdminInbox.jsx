@@ -19,6 +19,7 @@ import {
 import { Link } from 'react-router-dom';
 import { cn } from '../lib/utils';
 import { useWorkflow } from '../lib/WorkflowContext';
+import AdminInboxTour from '../components/tours/AdminInboxTour';
 
 export default function AdminInbox() {
     const { addOrder } = useWorkflow();
@@ -70,7 +71,7 @@ export default function AdminInbox() {
         <div className="space-y-6 max-w-7xl mx-auto relative">
             {/* AI Parsing Overlay (Gap Closure) */}
             {isParsing && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center animate-in fade-in duration-300">
+                <div id="parsing-simulation" className="fixed inset-0 z-[100] flex items-center justify-center animate-in fade-in duration-300">
                     <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-md" />
                     <div className="relative text-center space-y-6 max-w-md p-8 bg-white/5 rounded-3xl border border-white/10 shadow-2xl">
                         <div className="relative w-24 h-24 mx-auto">
@@ -265,6 +266,7 @@ export default function AdminInbox() {
                     </div>
                 </div>
             )}
+            <AdminInboxTour />
         </div>
     );
 }

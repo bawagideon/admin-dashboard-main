@@ -16,6 +16,7 @@ import {
 import { useWorkflow } from '../lib/WorkflowContext';
 import { SERVICE_STATUS, SERVICE_CATALOG } from '../lib/constants';
 import StatCard from '../components/StatsCard';
+import OverviewTour from '../components/tours/OverviewTour';
 
 // Mock Data
 const salesData = [
@@ -197,6 +198,7 @@ export default function Overview() {
                     </div>
                 </div>
             </div>
+            <OverviewTour />
         </div>
     );
 }

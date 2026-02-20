@@ -8,6 +8,7 @@ import { cn } from '../lib/utils';
 import { useRole } from '../lib/RoleContext';
 import { useWorkflow } from '../lib/WorkflowContext';
 import { SERVICE_STATUS } from '../lib/constants';
+import OpsOrdersTour from '../components/tours/OpsOrdersTour';
 
 const initialOrders = [
     { id: 1, orderId: '#179', customer: 'Anne Guesser', email: 'anyiafavour@gmail.com', service: 'Pipeline Inspection', assigned: 'Unassigned', status: 'Unassigned', date: '2025-11-14 15:56:24 UTC', rework: false },
@@ -258,6 +259,7 @@ export default function Orders() {
 
                                             {order.status === SERVICE_STATUS.OPS_REVIEW && (activeRole === roles.OPS_MANAGER || activeRole === roles.ADMIN) && (
                                                 <button
+                                                    id="perform-qa-btn"
                                                     onClick={() => setReviewingOrder(order)}
                                                     className="px-3 py-1 bg-purple-600 text-white text-[10px] font-bold rounded-md hover:bg-purple-700 transition flex items-center gap-1 shadow-sm"
                                                 >
@@ -341,6 +343,7 @@ export default function Orders() {
                     onClose={() => setReviewingOrder(null)}
                 />
             )}
+            <OpsOrdersTour />
         </div>
     );
 }

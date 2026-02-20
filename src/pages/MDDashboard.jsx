@@ -15,6 +15,7 @@ import { cn } from '../lib/utils';
 import RequestTimeline from '../components/RequestTimeline';
 import { useWorkflow } from '../lib/WorkflowContext';
 import { SERVICE_STATUS } from '../lib/constants';
+import GovernanceTour from '../components/tours/GovernanceTour';
 
 export default function MDDashboard() {
     const { orders, bulkClose, closeOrder } = useWorkflow();
@@ -184,6 +185,7 @@ export default function MDDashboard() {
                     )}
                 </div>
             </div>
+            <GovernanceTour />
         </div>
     );
 }
