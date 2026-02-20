@@ -4,6 +4,7 @@ import StatCard from '../components/StatsCard';
 import CustomerModal from '../components/CustomerModal';
 import { useWorkflow } from '../lib/WorkflowContext';
 import { SERVICE_CATALOG } from '../lib/constants';
+import ClientsTour from '../components/tours/ClientsTour';
 
 export default function Customers() {
     const { orders } = useWorkflow();
@@ -154,6 +155,7 @@ export default function Customers() {
             </div>
 
             <CustomerModal customer={selectedCustomer} onClose={() => setSelectedCustomer(null)} />
+            <ClientsTour />
         </div>
     );
 }

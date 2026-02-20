@@ -4,6 +4,7 @@ import StatCard from '../components/StatsCard';
 import { cn } from '../lib/utils';
 import { useWorkflow } from '../lib/WorkflowContext';
 import { SERVICE_STATUS, TEAM_SUGGESTIONS } from '../lib/constants';
+import TeamWorkloadTour from '../components/tours/TeamWorkloadTour';
 
 export default function RegisteredUsers() {
     const { orders } = useWorkflow();
@@ -131,6 +132,7 @@ export default function RegisteredUsers() {
                     </table>
                 </div>
             </div>
+            <TeamWorkloadTour />
         </div>
     );
 }

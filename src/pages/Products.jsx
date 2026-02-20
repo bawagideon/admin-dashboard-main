@@ -3,6 +3,7 @@ import { ClipboardList, Plus, Filter, MoreHorizontal, Edit2, Trash2, Clock } fro
 import ProductModal from '../components/ProductModal';
 import { SERVICE_CATALOG } from '../lib/constants';
 import { cn } from '../lib/utils';
+import ServiceCatalogTour from '../components/tours/ServiceCatalogTour';
 
 export default function Products() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -103,6 +104,7 @@ export default function Products() {
                     service={selectedService}
                 />
             )}
+            <ServiceCatalogTour />
         </div>
     );
 }

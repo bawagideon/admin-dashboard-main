@@ -2,83 +2,91 @@ import React from 'react';
 import Joyride, { STATUS } from 'react-joyride';
 import { useRole } from '../../lib/RoleContext';
 import { useTourTrigger } from '../../hooks/useTourTrigger';
-import { tourStyles } from './TourStyles';
 
 export default function OpsOrdersTour() {
     const { activeRole, roles } = useRole();
-    const { run, setRun } = useTourTrigger();
+    const { isTourActive, endTour } = useTourTrigger('ops-orders');
 
     const steps = [
         {
+            target: 'h1',
+            content: (
+                <div className="space-y-3 text-left">
+                    <h3 className="font-bold text-slate-800 text-lg">The Pipeline</h3>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                        This is the <strong>live pulse</strong> of the company. It tracks every request from 'Awaiting Payment' to 'MD Approval,' ensuring no client is forgotten.
+                    </p>
+                </div>
+            ),
+            placement: 'bottom',
+            disableBeacon: true,
+        },
+        {
             target: '.pipeline-stage-awaiting',
             content: (
-                <div className="text-left">
-                    <p className="font-bold text-primary mb-2">Phase 2: Payment Verification</p>
+                <div className="space-y-3 text-left">
+                    <h3 className="font-bold text-slate-800 text-lg">Phase 2: Payment Hook</h3>
                     <p className="text-sm text-slate-600 leading-relaxed">
-                        "When payment is made, the update comes back to the admin..."
-                    </p>
-                    <p className="text-xs text-slate-400 mt-2">
-                        Requests move to 'Unassigned' automatically once the Stripe/PayPal webhook is received.
+                        Notice the <strong>Stripe/PayPal</strong> integration. This fulfills the brief's requirement for automated updates back to the admin once a client pays.
                     </p>
                 </div>
             ),
             placement: 'right',
-            disableBeacon: true,
-            role: [roles.ADMIN, roles.MD, roles.OPS_MANAGER]
         },
         {
             target: '#smart-assign-btn',
             content: (
-                <div className="text-left">
-                    <p className="font-bold text-primary mb-2">Phase 3: Intelligent Routing</p>
+                <div className="space-y-3 text-left">
+                    <h3 className="font-bold text-slate-800 text-lg">Phase 3: Smart Assign</h3>
                     <p className="text-sm text-slate-600 leading-relaxed">
-                        "...who then forwards to the Operations Manager who assigns the task..."
-                    </p>
-                    <p className="text-xs text-slate-400 mt-2 italic">
-                        The Ops Manager uses 'Smart Assign' to route requests to the best available Specialist.
+                        Once paid, the Ops Manager uses this <strong>Smart Assign</strong> tool to route the task. It ensures work is 'forwarded' to the correct execution team.
                     </p>
                 </div>
             ),
             placement: 'top',
-            disableBeacon: true,
-            role: [roles.ADMIN, roles.OPS_MANAGER]
         },
         {
-            target: '#perform-qa-btn', // Reuse this if present for QA
+            target: '#perform-qa-btn',
             content: (
-                <div className="text-left">
-                    <p className="font-bold text-primary mb-2">Phase 4: QA Review</p>
+                <div className="space-y-3 text-left">
+                    <h3 className="font-bold text-slate-800 text-lg">Phase 4: QA Review</h3>
                     <p className="text-sm text-slate-600 leading-relaxed">
-                        After Specialists upload evidence, the Ops Manager performs a final QA review before MD sign-off.
+                        The <strong>'Perform QA'</strong> button allows the Ops Manager to vet specialist evidence before the MD sees it. If not perfect, they can trigger a <strong>'Rework'</strong> with one click.
                     </p>
                 </div>
             ),
             placement: 'top',
-            disableBeacon: true,
-            role: [roles.OPS_MANAGER]
         }
     ];
 
-    const filteredSteps = steps.filter(step => step.role.includes(activeRole));
-
     const handleJoyrideCallback = (data) => {
         const { status } = data;
-        const finishedStatuses = [STATUS.FINISHED, STATUS.SKIPPED];
-        if (finishedStatuses.includes(status)) {
-            setRun(false);
-            localStorage.setItem('hasSeenPresentationTour', 'true');
+        if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+            endTour();
         }
     };
 
+    if (!isTourActive) return null;
+    if (activeRole !== roles.ADMIN && activeRole !== roles.OPS_MANAGER) return null;
+
     return (
         <Joyride
-            steps={filteredSteps}
-            run={run}
+            steps={steps}
+            run={isTourActive}
             continuous
             showProgress
             showSkipButton
             callback={handleJoyrideCallback}
-            styles={tourStyles}
+            styles={{
+                options: {
+                    primaryColor: '#000000',
+                    zIndex: 1000,
+                    borderRadius: 12,
+                },
+                tooltipContainer: {
+                    textAlign: 'left',
+                }
+            }}
         />
     );
 }
